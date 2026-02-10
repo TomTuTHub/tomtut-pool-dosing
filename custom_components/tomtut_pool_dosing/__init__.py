@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import logging
+
+import aiohttp
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -8,54 +11,56 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 
 from .const import (
     DOMAIN,
+    CONF_HOST,
+    CONF_SCAN_INTERVAL,
+    DEFAULT_SCAN_INTERVAL,
     API_PATH_MEASUREMENTS,
-    API_PATH_RELAYS,
-    UPDATE_INTERVAL,
 )
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS = ["sensor", "binary_sensor"]
+PLATFORMS: list[str] = ["sensor", "binary_sensor"]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    host = entry.data["host"]
+    hass.data.setdefault(DOMAIN, {})
+
+    host: str = entry.data[CONF_HOST]
+    scan_interval = entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL.total_seconds())
+    update_interval = DEFAULT_SCAN_INTERVAL.__class__(seconds=int(scan_interval))
+
     session = async_get_clientsession(hass)
 
-    async def _update():
+    async def _async_update():
+        url = f"http://{host}{API_PATH_MEASUREMENTS}"
         try:
-            async with session.get(f"http://{host}{API_PATH_MEASUREMENTS}", timeout=10) as r1:
-                r1.raise_for_status()
-                measurements = await r1.json()
-
-            async with session.get(f"http://{host}{API_PATH_RELAYS}", timeout=10) as r2:
-                r2.raise_for_status()
-                relays = await r2.json()
-
-            return {
-                "measurements": measurements.get("measurements", {}),
-                "relays": relays.get("relays", {}),
-            }
+            async with session.get(url, timeout=aiohttp.ClientTimeout(total=10)) as resp:
+                resp.raise_for_status()
+                payload = await resp.json()
         except Exception as err:
             raise UpdateFailed(err) from err
 
+        # wir wollen ALLES behalten: mac, version, measurements, ...
+        return payload
+
     coordinator = DataUpdateCoordinator(
-        hass,
-        _LOGGER,
-        name="TomTuT Pool Dosieranlage",
-        update_method=_update,
-        update_interval=UPDATE_INTERVAL,
+        hass=hass,
+        logger=_LOGGER,
+        name=entry.title,
+        update_method=_async_update,
+        update_interval=update_interval,
     )
 
     await coordinator.async_config_entry_first_refresh()
 
-    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
+    hass.data[DOMAIN][entry.entry_id] = coordinator
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
-    hass.data[DOMAIN].pop(entry.entry_id)
-    return True
+    unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    if unload_ok:
+        hass.data[DOMAIN].pop(entry.entry_id, None)
+    return unload_ok
