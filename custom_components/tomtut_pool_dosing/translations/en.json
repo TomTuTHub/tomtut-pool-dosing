@@ -3,8 +3,9 @@
     "step": {
       "user": {
         "title": "Connect pool dosing device",
-        "description": "Enter the device's local IP/hostname.",
+        "description": "Enter a name and the device's local IP/hostname.",
         "data": {
+          "name": "Device name",
           "host": "IP / Hostname"
         }
       }
