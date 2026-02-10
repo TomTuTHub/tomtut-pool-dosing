@@ -1,0 +1,27 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect pool dosing device",
+        "description": "Enter the device's local IP/hostname.",
+        "data": {
+          "host": "IP / Hostname"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect. Check IP/host."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options",
+        "description": "Polling update interval.",
+        "data": {
+          "scan_interval": "Interval (seconds)"
+        }
+      }
+    }
+  }
+}

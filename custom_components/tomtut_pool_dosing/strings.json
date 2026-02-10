@@ -1,0 +1,28 @@
+{
+  "title": "TomTuT Pool Dosing",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Pool Dosieranlage verbinden",
+        "description": "Gib die lokale IP/Hostname der Dosieranlage an.",
+        "data": {
+          "host": "IP / Hostname"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Verbindung fehlgeschlagen. IP/Host prüfen."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Systemoptionen",
+        "description": "Update-Intervall für das Polling (Sekunden).",
+        "data": {
+          "scan_interval": "Intervall (Sekunden)"
+        }
+      }
+    }
+  }
+}
