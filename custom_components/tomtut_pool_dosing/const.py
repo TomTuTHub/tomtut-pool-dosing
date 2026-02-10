@@ -5,6 +5,7 @@ from datetime import timedelta
 DOMAIN = "tomtut_pool_dosing"
 
 CONF_HOST = "host"
+CONF_NAME = "name"
 CONF_SCAN_INTERVAL = "scan_interval"
 
 DEFAULT_NAME = "TomTuT Pool Dosing"
