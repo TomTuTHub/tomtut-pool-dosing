@@ -4,7 +4,6 @@ import voluptuous as vol
 
 from homeassistant import config_entries
 from homeassistant.const import CONF_NAME
-from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 
 from .const import (
@@ -17,7 +16,7 @@ from .const import (
 
 
 class TomTuTPoolDosingConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    VERSION = 1
+    VERSION = 2  # ⬅️ Versionsbump für saubere Migration
 
     async def async_step_user(self, user_input=None) -> FlowResult:
         if user_input is None:
@@ -25,22 +24,25 @@ class TomTuTPoolDosingConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 step_id="user",
                 data_schema=vol.Schema(
                     {
+                        vol.Required(CONF_NAME, default=DEFAULT_NAME): str,
                         vol.Required(CONF_HOST): str,
-                        vol.Optional(CONF_NAME, default="Pool Dosieranlage"): str,
                     }
                 ),
             )
 
+        name = user_input[CONF_NAME].strip()
         host = user_input[CONF_HOST].strip()
-        name = user_input.get(CONF_NAME, "Pool Dosieranlage").strip()
 
-        # verhindert doppelte Einträge pro Host
+        # 🔒 weiterhin nur eine Anlage pro Host
         await self.async_set_unique_id(host)
         self._abort_if_unique_id_configured()
 
         return self.async_create_entry(
-            title=f"{name} ({host})",
-            data={CONF_HOST: host},
+            title=name,  # ❗ KEINE IP MEHR IM TITEL
+            data={
+                CONF_NAME: name,
+                CONF_HOST: host,
+            },
         )
 
     @staticmethod
