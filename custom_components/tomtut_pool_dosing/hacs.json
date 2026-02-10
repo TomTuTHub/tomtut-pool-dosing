@@ -1,0 +1,9 @@
+{
+  "name": "TomTuT Pool Dosing",
+  "content_in_root": false,
+  "domain": "tomtut_pool_dosing",
+  "iot_class": "local_polling",
+  "render_readme": true,
+  "country": "DE",
+  "homeassistant": "2023.12"
+}
