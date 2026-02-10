@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from datetime import timedelta
 
 import aiohttp
 
@@ -46,13 +47,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         except Exception as err:
             raise UpdateFailed(err) from err
 
-        # Merge: wir behalten measurements komplett und hängen relays zusätzlich dran
         merged: dict = dict(measurements_payload or {})
         merged["relays"] = (relays_payload or {}).get("relays", {})
-
-        # optional: relay-version separat, falls du später debuggen willst
         merged["relays_version"] = (relays_payload or {}).get("version")
-
         return merged
 
     coordinator = DataUpdateCoordinator(
