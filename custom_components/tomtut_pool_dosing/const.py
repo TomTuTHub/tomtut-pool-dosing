@@ -5,23 +5,28 @@ from datetime import timedelta
 DOMAIN = "tomtut_pool_dosing"
 
 CONF_HOST = "host"
-CONF_NAME = "name"
 CONF_SCAN_INTERVAL = "scan_interval"
 
-DEFAULT_NAME = "TomTuT Pool Dosieranlage"
 DEFAULT_SCAN_INTERVAL = timedelta(seconds=5)
 
 API_PATH_MEASUREMENTS = "/api/measurements"
 API_PATH_RELAYS = "/api/relays"
 
-# Minimal: genau das was du willst
-MEASUREMENTS: dict[str, dict] = {
+# Harte, finale Entity-ID Prefixes (so wie du es willst)
+ENTITY_PREFIX = "tomtut_pool_dosieranlage"
+FIRMWARE_ENTITY_ID = "sensor.firmware_version"
+MAC_ENTITY_ID = "sensor.device_mac"
+
+# Measurements (nur was du willst)
+# keys exakt aus Example Response
+MEASUREMENTS = {
     "ph": {"name": "pH", "unit": "pH", "icon": "mdi:flask"},
     "rx": {"name": "Redox", "unit": "mV", "icon": "mdi:flash-outline"},
+    "flowswitch": {"name": "Flow", "unit": None, "icon": "mdi:pump"},
 }
 
-# Minimal: nur Relay 1 und 2, nur "power"
-RELAYS: dict[str, str] = {
-    "1": "Relay 1",
-    "2": "Relay 2",
+# Relays (nur was du willst)
+RELAYS = {
+    "1": "pH Injection (Relay 1)",
+    "2": "Redox Injection (Relay 2)",
 }
