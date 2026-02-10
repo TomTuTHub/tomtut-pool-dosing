@@ -14,7 +14,14 @@ Maintained by **TomTuT**.
 
 - It is **not developed, commissioned, or supported** by Beniferro or Poolsana.
 - It exists solely because Beniferro provides a **publicly documented local REST API**.
-- No cloud access is required.
+
+### Cloud / App / Setup note (important!)
+- The **official app and initial device setup** may rely on Beniferro’s **cloud services**.
+- **Probe calibration and configuration changes** currently must be done via the **official app** (and therefore typically via the cloud).
+- This Home Assistant integration is **read-only** and currently supports **local Wifi/LAN reading** of measurements via the REST API **without a cloud requirement for reading**.
+
+More background (German):  
+👉 https://tomtut.de/dosieranlage
 
 Official Beniferro API documentation:  
 👉 https://docs.myswimmingpool.eu/beniferro/local-api
@@ -22,7 +29,7 @@ Official Beniferro API documentation:
 ---
 
 ## Features
-- Local HTTP polling (no cloud dependency)
+- Local HTTP polling of measurements (LAN)
 - Read-only (safe, no control actions)
 - Sensors for pH, Redox (ORP), Flow, Levels, Conductivity (if available)
 - Native Home Assistant Config Flow
@@ -43,8 +50,7 @@ Official Beniferro API documentation:
 ## Installation
 Installation via **HACS (Custom Repository)**.
 
-This integration uses the **local REST API** provided by the device.
-The device must be reachable in the local network.
+The device must be reachable in the local network for polling the REST API.
 
 ---
 
