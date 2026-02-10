@@ -13,7 +13,6 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from .const import (
     DOMAIN,
     CONF_HOST,
-    CONF_NAME,
     CONF_SCAN_INTERVAL,
     DEFAULT_SCAN_INTERVAL,
     API_PATH_MEASUREMENTS,
@@ -28,8 +27,11 @@ PLATFORMS: list[str] = ["sensor", "binary_sensor"]
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data.setdefault(DOMAIN, {})
 
-    host: str = entry.data[CONF_HOST]
-    scan_interval = entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL.total_seconds())
+    host: str = entry.data[CONF_HOST].strip()
+
+    scan_interval = entry.options.get(
+        CONF_SCAN_INTERVAL, int(DEFAULT_SCAN_INTERVAL.total_seconds())
+    )
     update_interval = timedelta(seconds=int(scan_interval))
 
     session = async_get_clientsession(hass)
@@ -49,12 +51,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
         merged: dict = dict(measurements_payload or {})
         merged["relays"] = (relays_payload or {}).get("relays", {})
+        merged["relays_version"] = (relays_payload or {}).get("version")
         return merged
 
     coordinator = DataUpdateCoordinator(
         hass=hass,
         logger=_LOGGER,
-        name=entry.data.get(CONF_NAME, entry.title),
+        name=DOMAIN,
         update_method=_async_update,
         update_interval=update_interval,
     )
