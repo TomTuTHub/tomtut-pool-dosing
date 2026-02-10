@@ -49,7 +49,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
         merged: dict = dict(measurements_payload or {})
         merged["relays"] = (relays_payload or {}).get("relays", {})
-        merged["relays_version"] = (relays_payload or {}).get("version")
         return merged
 
     coordinator = DataUpdateCoordinator(
@@ -61,7 +60,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     )
 
     await coordinator.async_config_entry_first_refresh()
-
     hass.data[DOMAIN][entry.entry_id] = coordinator
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
