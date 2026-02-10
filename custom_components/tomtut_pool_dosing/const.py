@@ -1,16 +1,18 @@
+from __future__ import annotations
+
 from datetime import timedelta
 
 DOMAIN = "tomtut_pool_dosing"
 
 CONF_HOST = "host"
 
-# festes Polling
-UPDATE_INTERVAL = timedelta(seconds=20)
+# festes Polling (Coordinator)
+DEFAULT_UPDATE_INTERVAL = timedelta(seconds=5)
 
 API_PATH_MEASUREMENTS = "/api/measurements"
 API_PATH_RELAYS = "/api/relays"
 
-MEASUREMENTS = {
+MEASUREMENTS: dict[str, dict] = {
     # numeric
     "ph": {"name": "pH", "unit": "pH", "icon": "mdi:flask"},
     "rx": {"name": "Redox", "unit": "mV", "icon": "mdi:flash-outline"},
@@ -27,7 +29,7 @@ MEASUREMENTS = {
     "levelswitch_3": {"name": "Level Switch 3", "binary": True, "icon": "mdi:beaker-check"},
 }
 
-RELAYS = {
+RELAYS: dict[str, str] = {
     "1": "Relay 1",
     "2": "Relay 2",
     "3": "Relay 3",
