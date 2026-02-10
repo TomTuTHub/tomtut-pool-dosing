@@ -3,12 +3,12 @@ from __future__ import annotations
 import voluptuous as vol
 
 from homeassistant import config_entries
-from homeassistant.const import CONF_NAME
 from homeassistant.data_entry_flow import FlowResult
 
 from .const import (
     DOMAIN,
     CONF_HOST,
+    CONF_NAME,
     CONF_SCAN_INTERVAL,
     DEFAULT_NAME,
     DEFAULT_SCAN_INTERVAL,
@@ -16,7 +16,7 @@ from .const import (
 
 
 class TomTuTPoolDosingConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    VERSION = 2  # ⬅️ Versionsbump für saubere Migration
+    VERSION = 2
 
     async def async_step_user(self, user_input=None) -> FlowResult:
         if user_input is None:
@@ -33,12 +33,11 @@ class TomTuTPoolDosingConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         name = user_input[CONF_NAME].strip()
         host = user_input[CONF_HOST].strip()
 
-        # 🔒 weiterhin nur eine Anlage pro Host
         await self.async_set_unique_id(host)
         self._abort_if_unique_id_configured()
 
         return self.async_create_entry(
-            title=name,  # ❗ KEINE IP MEHR IM TITEL
+            title=name,
             data={
                 CONF_NAME: name,
                 CONF_HOST: host,
