@@ -4,8 +4,9 @@ from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.util import slugify
 
-from .const import DOMAIN, MEASUREMENTS
+from .const import DOMAIN, MEASUREMENTS, CONF_NAME
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
@@ -29,6 +30,9 @@ class PoolBinarySensor(CoordinatorEntity, BinarySensorEntity):
         self._key = key
         self._meta = meta
 
+        self._device_name = entry.data.get(CONF_NAME, entry.title)
+        self._device_slug = slugify(self._device_name)
+
         self._attr_name = meta.get("name", key)
         self._attr_unique_id = f"{entry.entry_id}_{key}"
         self._attr_icon = meta.get("icon")
@@ -37,7 +41,7 @@ class PoolBinarySensor(CoordinatorEntity, BinarySensorEntity):
     def device_info(self):
         return {
             "identifiers": {(DOMAIN, self._entry.entry_id)},
-            "name": self._entry.title,
+            "name": self._device_name,
             "manufacturer": "Vendor-neutral (Beniferro/Poolsana compatible)",
             "model": "Pool Dosing (local API)",
         }
