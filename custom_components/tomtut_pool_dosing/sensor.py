@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from homeassistant.components.sensor import SensorEntity, SensorDeviceClass
+from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.util import slugify
 
-from .const import DOMAIN, CONF_HOST, MEASUREMENTS
+from .const import DOMAIN, MEASUREMENTS, CONF_NAME
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
@@ -20,7 +21,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
             continue
         entities.append(PoolMeasurementSensor(coordinator, entry, key, meta))
 
-    # Diagnostics: Version + MAC
+    # Diagnostics
     entities.append(PoolVersionSensor(coordinator, entry))
     entities.append(PoolMacSensor(coordinator, entry))
 
@@ -31,13 +32,15 @@ class _Base(CoordinatorEntity, SensorEntity):
     def __init__(self, coordinator, entry: ConfigEntry):
         super().__init__(coordinator)
         self._entry = entry
+        self._device_name = entry.data.get(CONF_NAME, entry.title)
+        self._device_slug = slugify(self._device_name)
 
     @property
     def device_info(self):
-        # ein Gerät pro Config-Entry (ohne IP im Entity-Namen)
+        # ein Gerät pro Config-Entry – ohne IP im Namen
         return {
             "identifiers": {(DOMAIN, self._entry.entry_id)},
-            "name": self._entry.title,
+            "name": self._device_name,
             "manufacturer": "Vendor-neutral (Beniferro/Poolsana compatible)",
             "model": "Pool Dosing (local API)",
         }
@@ -52,7 +55,7 @@ class PoolMeasurementSensor(_Base):
         self._meta = meta
 
         self._attr_name = meta.get("name", key)
-        self._attr_unique_id = f"{entry.entry_id}_{key}"
+        self._attr_unique_id = f"{self._entry.entry_id}_{key}"
         self._attr_icon = meta.get("icon")
         self._attr_native_unit_of_measurement = meta.get("unit")
 
@@ -69,7 +72,7 @@ class PoolVersionSensor(_Base):
 
     def __init__(self, coordinator, entry: ConfigEntry):
         super().__init__(coordinator, entry)
-        self._attr_unique_id = f"{entry.entry_id}_version"
+        self._attr_unique_id = f"{self._entry.entry_id}_version"
 
     @property
     def native_value(self):
@@ -83,7 +86,7 @@ class PoolMacSensor(_Base):
 
     def __init__(self, coordinator, entry: ConfigEntry):
         super().__init__(coordinator, entry)
-        self._attr_unique_id = f"{entry.entry_id}_mac"
+        self._attr_unique_id = f"{self._entry.entry_id}_mac"
 
     @property
     def native_value(self):
