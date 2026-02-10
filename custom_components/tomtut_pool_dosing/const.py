@@ -9,26 +9,74 @@ CONF_NAME = "name"
 CONF_SCAN_INTERVAL = "scan_interval"
 
 DEFAULT_NAME = "TomTuT Pool Dosing"
-DEFAULT_SCAN_INTERVAL = timedelta(seconds=5)
+DEFAULT_SCAN_INTERVAL = timedelta(seconds=10)  # 5s geht, 10s ist gesünder
 
 API_PATH_MEASUREMENTS = "/api/measurements"
 API_PATH_RELAYS = "/api/relays"
 
 MEASUREMENTS: dict[str, dict] = {
-    # numeric
-    "ph": {"name": "pH", "unit": "pH", "icon": "mdi:ph"},
-    "rx": {"name": "Redox", "unit": "mV", "icon": "mdi:flash-outline"},
-    "conductivity": {"name": "Conductivity", "unit": "µS/cm", "icon": "mdi:water"},
-    "pressure": {"name": "Pressure", "unit": "bar", "icon": "mdi:gauge"},
-    "temperature_1": {"name": "Temperature 1", "unit": "°C", "icon": "mdi:thermometer"},
-    "temperature_2": {"name": "Temperature 2", "unit": "°C", "icon": "mdi:thermometer"},
-    "temperature_3": {"name": "Temperature 3", "unit": "°C", "icon": "mdi:thermometer"},
+    # =====================
+    # Numeric measurements
+    # =====================
+    "ph": {
+        "name": "pH",
+        "unit": "pH",
+        "icon": "mdi:flask",
+    },
+    "rx": {
+        "name": "Redox",
+        "unit": "mV",
+        "icon": "mdi:flash-outline",
+    },
+    "conductivity": {
+        "name": "Conductivity",
+        "unit": "µS/cm",
+        "icon": "mdi:water",
+    },
+    "pressure": {
+        "name": "Pressure",
+        "unit": "bar",
+        "icon": "mdi:gauge",
+    },
+    "temperature_1": {
+        "name": "Temperature 1",
+        "unit": "°C",
+        "icon": "mdi:thermometer",
+    },
+    "temperature_2": {
+        "name": "Temperature 2",
+        "unit": "°C",
+        "icon": "mdi:thermometer",
+    },
+    "temperature_3": {
+        "name": "Temperature 3",
+        "unit": "°C",
+        "icon": "mdi:thermometer",
+    },
 
-    # binary
-    "flowswitch": {"name": "Flow", "binary": True, "icon": "mdi:water-pump"},
-    "levelswitch_1": {"name": "pH Level", "binary": True, "icon": "mdi:beaker-outline"},
-    "levelswitch_2": {"name": "Rx Level", "binary": True, "icon": "mdi:beaker-alert-outline"},
-    "levelswitch_3": {"name": "Level Switch 3", "binary": True, "icon": "mdi:beaker-check"},
+    # =====================
+    # Binary / relay-like
+    # =====================
+    "flowswitch": {
+        "name": "Flow",
+        "binary": True,
+        "icon": "mdi:pump",
+    },
+    "levelswitch_1": {
+        "name": "pH Dosing Active",
+        "binary": True,
+        "icon": "mdi:beaker-outline",
+    },
+    "levelswitch_2": {
+        "name": "Redox Dosing Active",
+        "binary": True,
+        "icon": "mdi:beaker-alert-outline",
+    },
+    "levelswitch_3": {
+        "name": "Level Switch 3",
+        "binary": True,
+        "icon": "mdi:beaker-check",
+    },
 }
 
 RELAYS: dict[str, str] = {
