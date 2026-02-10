@@ -28,7 +28,6 @@ class PoolBinarySensor(CoordinatorEntity, BinarySensorEntity):
         super().__init__(coordinator)
         self._entry = entry
         self._key = key
-        self._meta = meta
 
         self._device_name = entry.data.get(CONF_NAME, entry.title)
         self._device_slug = slugify(self._device_name)
@@ -50,4 +49,4 @@ class PoolBinarySensor(CoordinatorEntity, BinarySensorEntity):
     def is_on(self):
         data = (self.coordinator.data or {}).get("measurements", {})
         value = (data.get(self._key, {}) or {}).get("value")
-        return bool(value) if value is not None else None
+        return value == 1
