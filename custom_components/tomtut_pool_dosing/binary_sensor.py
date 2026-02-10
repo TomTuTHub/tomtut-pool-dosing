@@ -41,9 +41,8 @@ class PoolRelayPowerBinary(_BaseBinary):
         super().__init__(coordinator, entry)
         self._relay_id = relay_id
 
-        # exakt deine gewünschten Entity-IDs:
-        # binary_sensor.tomtut_pool_dosieranlage_relay_1_power
-        # binary_sensor.tomtut_pool_dosieranlage_relay_2_power
+        # Entity-IDs:
+        # bsp: binary_sensor.tomtut_pool_dosieranlage_relay_1_power
         self.entity_id = f"binary_sensor.{ENTITY_PREFIX}_relay_{relay_id}_power"
 
         self._attr_name = f"Relay {relay_id} Power"
