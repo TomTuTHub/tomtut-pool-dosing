@@ -14,7 +14,7 @@ DEFAULT_SCAN_INTERVAL = timedelta(seconds=5)
 API_PATH_MEASUREMENTS = "/api/measurements"
 API_PATH_RELAYS = "/api/relays"
 
-# Minimal: genau das was du willst (+ flowswitch)
+# ph, rx, flowswitch
 MEASUREMENTS: dict[str, dict] = {
     "ph": {"name": "pH", "unit": "pH", "icon": "mdi:flask"},
     "rx": {"name": "Redox", "unit": "mV", "icon": "mdi:flash-outline"},
@@ -22,7 +22,7 @@ MEASUREMENTS: dict[str, dict] = {
     "flowswitch": {"name": "Flow", "unit": None, "icon": "mdi:pump"},
 }
 
-# Minimal: nur Relay 1 und 2, nur "power"
+# Relay 1 und 2, jeweils "power"
 RELAYS: dict[str, str] = {
     "1": "Relay 1",
     "2": "Relay 2",
