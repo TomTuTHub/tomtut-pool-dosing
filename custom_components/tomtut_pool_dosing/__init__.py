@@ -12,9 +12,11 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from .const import (
     DOMAIN,
     CONF_HOST,
+    CONF_NAME,
     CONF_SCAN_INTERVAL,
     DEFAULT_SCAN_INTERVAL,
     API_PATH_MEASUREMENTS,
+    API_PATH_RELAYS,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -27,26 +29,36 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     host: str = entry.data[CONF_HOST]
     scan_interval = entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL.total_seconds())
-    update_interval = DEFAULT_SCAN_INTERVAL.__class__(seconds=int(scan_interval))
+    update_interval = timedelta(seconds=int(scan_interval))
 
     session = async_get_clientsession(hass)
 
-    async def _async_update():
-        url = f"http://{host}{API_PATH_MEASUREMENTS}"
+    async def _fetch_json(path: str) -> dict:
+        url = f"http://{host}{path}"
+        async with session.get(url, timeout=aiohttp.ClientTimeout(total=10)) as resp:
+            resp.raise_for_status()
+            return await resp.json()
+
+    async def _async_update() -> dict:
         try:
-            async with session.get(url, timeout=aiohttp.ClientTimeout(total=10)) as resp:
-                resp.raise_for_status()
-                payload = await resp.json()
+            measurements_payload = await _fetch_json(API_PATH_MEASUREMENTS)
+            relays_payload = await _fetch_json(API_PATH_RELAYS)
         except Exception as err:
             raise UpdateFailed(err) from err
 
-        # wir wollen ALLES behalten: mac, version, measurements, ...
-        return payload
+        # Merge: wir behalten measurements komplett und hängen relays zusätzlich dran
+        merged: dict = dict(measurements_payload or {})
+        merged["relays"] = (relays_payload or {}).get("relays", {})
+
+        # optional: relay-version separat, falls du später debuggen willst
+        merged["relays_version"] = (relays_payload or {}).get("version")
+
+        return merged
 
     coordinator = DataUpdateCoordinator(
         hass=hass,
         logger=_LOGGER,
-        name=entry.title,
+        name=entry.data.get(CONF_NAME, entry.title),
         update_method=_async_update,
         update_interval=update_interval,
     )
