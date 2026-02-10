@@ -4,8 +4,9 @@
     "step": {
       "user": {
         "title": "Pool Dosieranlage verbinden",
-        "description": "Gib die lokale IP/Hostname der Dosieranlage an.",
+        "description": "Gib einen Namen und die lokale IP/Hostname der Dosieranlage an.",
         "data": {
+          "name": "Name der Dosieranlage",
           "host": "IP / Hostname"
         }
       }
