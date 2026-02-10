@@ -8,7 +8,7 @@ CONF_HOST = "host"
 CONF_SCAN_INTERVAL = "scan_interval"
 
 DEFAULT_NAME = "TomTuT Pool Dosing"
-DEFAULT_SCAN_INTERVAL = timedelta(seconds=20)
+DEFAULT_SCAN_INTERVAL = timedelta(seconds=5)
 
 API_PATH_MEASUREMENTS = "/api/measurements"
 API_PATH_RELAYS = "/api/relays"
