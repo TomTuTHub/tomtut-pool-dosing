@@ -18,7 +18,7 @@
   "options": {
     "step": {
       "init": {
-        "title": "Systemoptionen",
+        "title": "Optionen",
         "description": "Update-Intervall für das Polling (Sekunden).",
         "data": {
           "scan_interval": "Intervall (Sekunden)"
