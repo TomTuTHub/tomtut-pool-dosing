@@ -5,16 +5,17 @@ from datetime import timedelta
 DOMAIN = "tomtut_pool_dosing"
 
 CONF_HOST = "host"
+CONF_SCAN_INTERVAL = "scan_interval"
 
-# festes Polling (Coordinator)
-DEFAULT_UPDATE_INTERVAL = timedelta(seconds=5)
+DEFAULT_NAME = "TomTuT Pool Dosing"
+DEFAULT_SCAN_INTERVAL = timedelta(seconds=20)
 
 API_PATH_MEASUREMENTS = "/api/measurements"
 API_PATH_RELAYS = "/api/relays"
 
 MEASUREMENTS: dict[str, dict] = {
     # numeric
-    "ph": {"name": "pH", "unit": "pH", "icon": "mdi:flask"},
+    "ph": {"name": "pH", "unit": "pH", "icon": "mdi:ph"},
     "rx": {"name": "Redox", "unit": "mV", "icon": "mdi:flash-outline"},
     "conductivity": {"name": "Conductivity", "unit": "µS/cm", "icon": "mdi:water"},
     "pressure": {"name": "Pressure", "unit": "bar", "icon": "mdi:gauge"},
