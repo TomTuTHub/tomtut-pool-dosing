@@ -40,20 +40,18 @@ class _Base(CoordinatorEntity, SensorEntity):
 
 
 class PoolPhSensor(_Base):
-    _attr_has_entity_name = False  # wir setzen entity_id fest
+    _attr_has_entity_name = True
 
     def __init__(self, coordinator, entry: ConfigEntry):
         super().__init__(coordinator, entry)
         meta = MEASUREMENTS["ph"]
         self._key = "ph"
 
-        self._attr_name = "TomTuT Pool Dosieranlage pH"
+        # HA erzeugt daraus: "<Gerät> pH" (weil _attr_has_entity_name=True)
+        self._attr_name = meta.get("name", "pH")
         self._attr_unique_id = f"{entry.entry_id}_ph"
         self._attr_icon = meta.get("icon")
         self._attr_native_unit_of_measurement = meta.get("unit")
-
-        # ✅ exakt deine gewünschte Entity-ID
-        self.entity_id = "sensor.tomtut_pool_dosieranlage_ph"
 
     @property
     def native_value(self):
@@ -62,20 +60,17 @@ class PoolPhSensor(_Base):
 
 
 class PoolRedoxSensor(_Base):
-    _attr_has_entity_name = False
+    _attr_has_entity_name = True
 
     def __init__(self, coordinator, entry: ConfigEntry):
         super().__init__(coordinator, entry)
         meta = MEASUREMENTS["rx"]
         self._key = "rx"
 
-        self._attr_name = "TomTuT Pool Dosieranlage Redox"
-        self._attr_unique_id = f"{entry.entry_id}_redox"
+        self._attr_name = meta.get("name", "Redox")
+        self._attr_unique_id = f"{entry.entry_id}_rx"
         self._attr_icon = meta.get("icon")
         self._attr_native_unit_of_measurement = meta.get("unit")
-
-        # ✅ exakt deine gewünschte Entity-ID
-        self.entity_id = "sensor.tomtut_pool_dosieranlage_redox"
 
     @property
     def native_value(self):
@@ -84,20 +79,18 @@ class PoolRedoxSensor(_Base):
 
 
 class PoolFlowSwitchSensor(_Base):
-    _attr_has_entity_name = False
+    _attr_has_entity_name = True
 
     def __init__(self, coordinator, entry: ConfigEntry):
         super().__init__(coordinator, entry)
         meta = MEASUREMENTS["flowswitch"]
         self._key = "flowswitch"
 
-        self._attr_name = "Flow"
+        self._attr_name = meta.get("name", "Flow")
         self._attr_unique_id = f"{entry.entry_id}_flowswitch"
         self._attr_icon = meta.get("icon")
-        self._attr_native_unit_of_measurement = None  # 0/1
-
-        # Entity-IDs sind immer lowercase -> daher so:
-        self.entity_id = "sensor.tomtut_pool_dosieranlage_flow"
+        # flowswitch ist 0/1 -> keine Einheit
+        self._attr_native_unit_of_measurement = None
 
     @property
     def native_value(self):
@@ -106,7 +99,7 @@ class PoolFlowSwitchSensor(_Base):
 
 
 class PoolFirmwareVersionSensor(_Base):
-    _attr_has_entity_name = False
+    _attr_has_entity_name = True
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_icon = "mdi:information-outline"
 
@@ -115,16 +108,13 @@ class PoolFirmwareVersionSensor(_Base):
         self._attr_name = "Firmware Version"
         self._attr_unique_id = f"{entry.entry_id}_firmware_version"
 
-        # ✅ exakt deine gewünschte Entity-ID
-        self.entity_id = "sensor.firmware_version"
-
     @property
     def native_value(self):
         return (self.coordinator.data or {}).get("version")
 
 
 class PoolMacSensor(_Base):
-    _attr_has_entity_name = False
+    _attr_has_entity_name = True
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_icon = "mdi:lan"
 
@@ -132,9 +122,6 @@ class PoolMacSensor(_Base):
         super().__init__(coordinator, entry)
         self._attr_name = "Device MAC"
         self._attr_unique_id = f"{entry.entry_id}_device_mac"
-
-        # ✅ exakt deine gewünschte Entity-ID
-        self.entity_id = "sensor.device_mac"
 
     @property
     def native_value(self):
