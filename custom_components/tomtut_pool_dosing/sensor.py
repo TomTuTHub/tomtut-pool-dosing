@@ -12,17 +12,12 @@ from .const import DOMAIN, MEASUREMENTS, CONF_NAME
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     coordinator = hass.data[DOMAIN][entry.entry_id]
 
-    entities: list[SensorEntity] = []
-
-    # Measurements (nur numeric)
-    for key, meta in MEASUREMENTS.items():
-        if meta.get("binary"):
-            continue
-        entities.append(PoolMeasurementSensor(coordinator, entry, key, meta))
-
-    # Diagnostics: Version + MAC
-    entities.append(PoolVersionSensor(coordinator, entry))
-    entities.append(PoolMacSensor(coordinator, entry))
+    entities: list[SensorEntity] = [
+        PoolPhSensor(coordinator, entry),
+        PoolRedoxSensor(coordinator, entry),
+        PoolFirmwareVersionSensor(coordinator, entry),
+        PoolMacSensor(coordinator, entry),
+    ]
 
     async_add_entities(entities)
 
@@ -43,18 +38,21 @@ class _Base(CoordinatorEntity, SensorEntity):
         }
 
 
-class PoolMeasurementSensor(_Base):
-    _attr_has_entity_name = True
+class PoolPhSensor(_Base):
+    _attr_has_entity_name = False  # wir setzen entity_id fest
 
-    def __init__(self, coordinator, entry: ConfigEntry, key: str, meta: dict):
+    def __init__(self, coordinator, entry: ConfigEntry):
         super().__init__(coordinator, entry)
-        self._key = key
-        self._meta = meta
+        meta = MEASUREMENTS["ph"]
+        self._key = "ph"
 
-        self._attr_name = meta.get("name", key)
-        self._attr_unique_id = f"{entry.entry_id}_{key}"
+        self._attr_name = "TomTuT Pool Dosieranlage pH"
+        self._attr_unique_id = f"{entry.entry_id}_ph"
         self._attr_icon = meta.get("icon")
         self._attr_native_unit_of_measurement = meta.get("unit")
+
+        # ✅ exakt deine gewünschte Entity-ID
+        self.entity_id = "sensor.tomtut_pool_dosieranlage_ph"
 
     @property
     def native_value(self):
@@ -62,14 +60,40 @@ class PoolMeasurementSensor(_Base):
         return (data.get(self._key, {}) or {}).get("value")
 
 
-class PoolVersionSensor(_Base):
-    _attr_name = "Firmware Version"
+class PoolRedoxSensor(_Base):
+    _attr_has_entity_name = False
+
+    def __init__(self, coordinator, entry: ConfigEntry):
+        super().__init__(coordinator, entry)
+        meta = MEASUREMENTS["rx"]
+        self._key = "rx"
+
+        self._attr_name = "TomTuT Pool Dosieranlage Redox"
+        self._attr_unique_id = f"{entry.entry_id}_redox"
+        self._attr_icon = meta.get("icon")
+        self._attr_native_unit_of_measurement = meta.get("unit")
+
+        # ✅ exakt deine gewünschte Entity-ID
+        self.entity_id = "sensor.tomtut_pool_dosieranlage_redox"
+
+    @property
+    def native_value(self):
+        data = (self.coordinator.data or {}).get("measurements", {})
+        return (data.get(self._key, {}) or {}).get("value")
+
+
+class PoolFirmwareVersionSensor(_Base):
+    _attr_has_entity_name = False
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_icon = "mdi:information-outline"
 
     def __init__(self, coordinator, entry: ConfigEntry):
         super().__init__(coordinator, entry)
-        self._attr_unique_id = f"{entry.entry_id}_version"
+        self._attr_name = "Firmware Version"
+        self._attr_unique_id = f"{entry.entry_id}_firmware_version"
+
+        # ✅ exakt deine gewünschte Entity-ID
+        self.entity_id = "sensor.firmware_version"
 
     @property
     def native_value(self):
@@ -77,13 +101,17 @@ class PoolVersionSensor(_Base):
 
 
 class PoolMacSensor(_Base):
-    _attr_name = "Device MAC"
+    _attr_has_entity_name = False
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_icon = "mdi:lan"
 
     def __init__(self, coordinator, entry: ConfigEntry):
         super().__init__(coordinator, entry)
-        self._attr_unique_id = f"{entry.entry_id}_mac"
+        self._attr_name = "Device MAC"
+        self._attr_unique_id = f"{entry.entry_id}_device_mac"
+
+        # ✅ exakt deine gewünschte Entity-ID
+        self.entity_id = "sensor.device_mac"
 
     @property
     def native_value(self):
