@@ -8,15 +8,13 @@ from homeassistant.data_entry_flow import FlowResult
 from .const import (
     DOMAIN,
     CONF_HOST,
-    CONF_NAME,
     CONF_SCAN_INTERVAL,
-    DEFAULT_NAME,
     DEFAULT_SCAN_INTERVAL,
 )
 
 
 class TomTuTPoolDosingConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    VERSION = 2
+    VERSION = 1
 
     async def async_step_user(self, user_input=None) -> FlowResult:
         if user_input is None:
@@ -24,24 +22,20 @@ class TomTuTPoolDosingConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 step_id="user",
                 data_schema=vol.Schema(
                     {
-                        vol.Required(CONF_NAME, default=DEFAULT_NAME): str,
                         vol.Required(CONF_HOST): str,
                     }
                 ),
             )
 
-        name = user_input[CONF_NAME].strip()
         host = user_input[CONF_HOST].strip()
 
+        # unique per host (damit nicht doppelt angelegt wird)
         await self.async_set_unique_id(host)
         self._abort_if_unique_id_configured()
 
         return self.async_create_entry(
-            title=name,
-            data={
-                CONF_NAME: name,
-                CONF_HOST: host,
-            },
+            title="TomTuT Pool Dosieranlage",
+            data={CONF_HOST: host},
         )
 
     @staticmethod
