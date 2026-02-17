@@ -1,11 +1,11 @@
 {
   "domain": "tomtut_pool_dosing",
   "name": "TomTuT Pool Dosing",
-  "version": "1.5.0",
+  "codeowners": ["@TomTuTHub"],
   "config_flow": true,
   "documentation": "https://github.com/TomTuTHub/tomtut-pool-dosing",
+  "iot_class": "local_polling",
   "issue_tracker": "https://github.com/TomTuTHub/tomtut-pool-dosing/issues",
-  "codeowners": ["@TomTuTHub"],
   "requirements": [],
-  "iot_class": "local_polling"
+  "version": "1.5.0"
 }
