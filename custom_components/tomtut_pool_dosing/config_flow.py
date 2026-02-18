@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import asyncio
+from datetime import timedelta
+
 import aiohttp
 import voluptuous as vol
 
 from homeassistant import config_entries
+from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
@@ -73,28 +76,54 @@ class TomTuTPoolDosingConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             return False
 
     @staticmethod
+    @callback
     def async_get_options_flow(config_entry):
-        return TomTuTPoolDosingOptionsFlowHandler(config_entry)
+        return TomTuTPoolDosingOptionsFlowHandler()
+
+
+MIN_SCAN_INTERVAL = 5
+MAX_SCAN_INTERVAL = 300
 
 
 class TomTuTPoolDosingOptionsFlowHandler(config_entries.OptionsFlow):
-    def __init__(self, config_entry):
-        self.config_entry = config_entry
-
     async def async_step_init(self, user_input=None) -> FlowResult:
         if user_input is None:
-            current = self.config_entry.options.get(
-                CONF_SCAN_INTERVAL, int(DEFAULT_SCAN_INTERVAL.total_seconds())
+            current = self._normalize_scan_interval(
+                self.config_entry.options.get(CONF_SCAN_INTERVAL)
             )
             return self.async_show_form(
                 step_id="init",
                 data_schema=vol.Schema(
                     {
                         vol.Required(CONF_SCAN_INTERVAL, default=int(current)): vol.All(
-                            vol.Coerce(int), vol.Range(min=5, max=300)
+                            vol.Coerce(int),
+                            vol.Range(min=MIN_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL),
                         )
                     }
                 ),
             )
 
-        return self.async_create_entry(title="", data=user_input)
+        return self.async_create_entry(
+            title="",
+            data={
+                CONF_SCAN_INTERVAL: self._normalize_scan_interval(
+                    user_input.get(CONF_SCAN_INTERVAL)
+                )
+            },
+        )
+
+    @staticmethod
+    def _normalize_scan_interval(value) -> int:
+        default_value = int(DEFAULT_SCAN_INTERVAL.total_seconds())
+
+        if value is None:
+            return default_value
+        if isinstance(value, timedelta):
+            return int(value.total_seconds())
+
+        try:
+            interval = int(value)
+        except (TypeError, ValueError):
+            return default_value
+
+        return max(MIN_SCAN_INTERVAL, min(MAX_SCAN_INTERVAL, interval))
