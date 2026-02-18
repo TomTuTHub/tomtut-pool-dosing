@@ -33,6 +33,7 @@ Official Beniferro API documentation:
 - Read-only (safe, no control actions)
 - Sensors for pH, Redox (ORP), Flow, Levels, Conductivity (if available)
 - Native Home Assistant Config Flow
+- Use the gear icon in Home Assistant to set how often values are polled from the dosing system
 - Designed for dashboards & picture-elements
 
 ---
@@ -63,6 +64,13 @@ API reference:
 👉 https://docs.myswimmingpool.eu/beniferro/local-api
 
 ---
+
+## Support this project
+If you like this integration, you can support my work here:
+👉 https://www.tomtut.de/product/dankeschoen-fuer-thomas-buy-me-a-coffee/
+
+---
+
 
 ## Disclaimer
 This software is provided **as-is**, without warranty of any kind.
