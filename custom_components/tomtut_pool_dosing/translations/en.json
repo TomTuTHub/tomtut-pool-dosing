@@ -18,8 +18,9 @@
     "step": {
       "init": {
         "title": "Options",
-        "description": "Polling update interval.",
+        "description": "Device IP/hostname and polling update interval.",
         "data": {
+          "host": "IP / Hostname",
           "scan_interval": "Interval (seconds)"
         }
       }

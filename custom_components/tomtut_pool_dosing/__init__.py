@@ -29,7 +29,7 @@ PLATFORMS: list[str] = ["sensor", "binary_sensor"]
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data.setdefault(DOMAIN, {})
 
-    host: str = entry.data[CONF_HOST].strip()
+    host: str = (entry.options.get(CONF_HOST) or entry.data[CONF_HOST]).strip()
 
     scan_interval = entry.options.get(
         CONF_SCAN_INTERVAL, int(DEFAULT_SCAN_INTERVAL.total_seconds())
