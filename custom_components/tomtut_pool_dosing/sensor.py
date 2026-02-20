@@ -27,7 +27,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         PoolMacSensor(coordinator, entry),
         PoolDeviceIpSensor(coordinator, entry),
         PoolConfiguredScanIntervalSensor(coordinator, entry),
-        PoolLastSuccessfulUpdateSensor(coordinator, entry),
     ]
 
     async_add_entities(entities)
@@ -189,18 +188,3 @@ class PoolConfiguredScanIntervalSensor(_Base):
                 int(DEFAULT_SCAN_INTERVAL.total_seconds()),
             )
         )
-
-
-class PoolLastSuccessfulUpdateSensor(_Base):
-    _attr_has_entity_name = True
-    _attr_entity_category = EntityCategory.DIAGNOSTIC
-    _attr_icon = "mdi:clock-check-outline"
-
-    def __init__(self, coordinator, entry: ConfigEntry):
-        super().__init__(coordinator, entry)
-        self._attr_name = "Last Successful Update"
-        self._attr_unique_id = f"{entry.entry_id}_last_successful_update"
-
-    @property
-    def native_value(self):
-        return self.coordinator.last_update_success_time
