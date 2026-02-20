@@ -75,7 +75,20 @@ class PoolRedoxSensor(_Base):
     @property
     def native_value(self):
         data = (self.coordinator.data or {}).get("measurements", {})
-        return (data.get(self._key, {}) or {}).get("value")
+        value = (data.get(self._key, {}) or {}).get("value")
+
+        if isinstance(value, str):
+            normalized = value.strip().replace(",", ".")
+            try:
+                numeric = float(normalized)
+            except ValueError:
+                return value
+
+            if numeric.is_integer():
+                return int(numeric)
+            return numeric
+
+        return value
 
 
 class PoolFlowSwitchSensor(_Base):
