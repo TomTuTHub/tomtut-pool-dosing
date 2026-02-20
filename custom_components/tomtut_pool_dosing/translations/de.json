@@ -1,6 +1,5 @@
 {
   "title": "TomTuT Pool Dosing",
-
   "config": {
     "step": {
       "user": {
@@ -12,10 +11,10 @@
       }
     },
     "error": {
-      "cannot_connect": "Verbindung fehlgeschlagen. IP-Adresse prüfen."
+      "cannot_connect": "Verbindung fehlgeschlagen. IP-Adresse prüfen.",
+      "invalid_ip": "Ungültige IP-Adresse. Bitte nur eine IP eingeben."
     }
   },
-
   "options": {
     "step": {
       "init": {

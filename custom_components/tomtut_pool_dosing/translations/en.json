@@ -11,7 +11,8 @@
       }
     },
     "error": {
-      "cannot_connect": "Failed to connect. Check IP."
+      "cannot_connect": "Failed to connect. Check IP.",
+      "invalid_ip": "Invalid IP address. Please enter IP only."
     }
   },
   "options": {
