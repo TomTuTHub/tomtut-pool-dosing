@@ -52,6 +52,7 @@ class PoolPhSensor(_Base):
         self._attr_unique_id = f"{entry.entry_id}_ph"
         self._attr_icon = meta.get("icon")
         self._attr_native_unit_of_measurement = meta.get("unit")
+        self._attr_suggested_display_precision = 1
 
     @property
     def native_value(self):
@@ -71,6 +72,7 @@ class PoolRedoxSensor(_Base):
         self._attr_unique_id = f"{entry.entry_id}_rx"
         self._attr_icon = meta.get("icon")
         self._attr_native_unit_of_measurement = meta.get("unit")
+        self._attr_suggested_display_precision = 0
 
     @property
     def native_value(self):
