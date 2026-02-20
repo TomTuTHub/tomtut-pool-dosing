@@ -65,6 +65,9 @@ API reference:
 
 ---
 
+## Version
+- **v1.6.3**: Redox (rx) values are normalized to numeric output, so default values like `700,00` are shown without comma as `700`.
+
 ## Support this project
 If you like this integration, you can support my work here:
 👉 https://www.tomtut.de/product/dankeschoen-fuer-thomas-buy-me-a-coffee/
