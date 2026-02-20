@@ -5,7 +5,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, RELAYS, CONF_NAME
+from .const import DOMAIN, RELAYS, CONF_HOST, CONF_NAME
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
@@ -26,6 +26,7 @@ class _BaseBinary(CoordinatorEntity, BinarySensorEntity):
         super().__init__(coordinator)
         self._entry = entry
         self._device_name = entry.data.get(CONF_NAME, entry.title)
+        self._host = (entry.options.get(CONF_HOST) or entry.data.get(CONF_HOST) or "").strip()
 
     @property
     def device_info(self):
@@ -34,6 +35,7 @@ class _BaseBinary(CoordinatorEntity, BinarySensorEntity):
             "name": self._device_name,
             "manufacturer": "Vendor-neutral (Beniferro/Poolsana compatible)",
             "model": "Pool Dosing (local API)",
+            "configuration_url": f"http://{self._host}",
         }
 
 
