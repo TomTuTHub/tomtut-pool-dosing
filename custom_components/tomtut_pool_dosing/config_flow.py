@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 from datetime import timedelta
+import ipaddress
 
 import aiohttp
 import voluptuous as vol
@@ -41,6 +42,19 @@ class TomTuTPoolDosingConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         name = (user_input.get(CONF_NAME) or "").strip()
         host = (user_input.get(CONF_HOST) or "").strip()
+
+        if not _is_valid_ip(host):
+            errors["base"] = "invalid_ip"
+            return self.async_show_form(
+                step_id="user",
+                data_schema=vol.Schema(
+                    {
+                        vol.Required(CONF_NAME, default=name or DEFAULT_NAME): str,
+                        vol.Required(CONF_HOST, default=host): str,
+                    }
+                ),
+                errors=errors,
+            )
 
         if not await _async_test_connection(self.hass, host):
             errors["base"] = "cannot_connect"
@@ -82,6 +96,14 @@ async def _async_test_connection(hass, host: str) -> bool:
         return False
 
 
+def _is_valid_ip(host: str) -> bool:
+    try:
+        ipaddress.ip_address(host)
+    except ValueError:
+        return False
+    return True
+
+
 MIN_SCAN_INTERVAL = 5
 MAX_SCAN_INTERVAL = 300
 
@@ -110,7 +132,10 @@ class TomTuTPoolDosingOptionsFlowHandler(config_entries.OptionsFlow):
         errors: dict[str, str] = {}
         host = (user_input.get(CONF_HOST) or "").strip()
 
-        if not await _async_test_connection(self.hass, host):
+        if not _is_valid_ip(host):
+            errors["base"] = "invalid_ip"
+
+        elif not await _async_test_connection(self.hass, host):
             errors["base"] = "cannot_connect"
 
         if errors:
