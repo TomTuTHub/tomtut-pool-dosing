@@ -3,24 +3,24 @@
     "step": {
       "user": {
         "title": "Connect pool dosing device",
-        "description": "Enter a name and the device's local IP/hostname.",
+        "description": "Enter a name and the device's local IP.",
         "data": {
           "name": "Device name",
-          "host": "IP / Hostname"
+          "host": "IP"
         }
       }
     },
     "error": {
-      "cannot_connect": "Failed to connect. Check IP/host."
+      "cannot_connect": "Failed to connect. Check IP."
     }
   },
   "options": {
     "step": {
       "init": {
         "title": "Options",
-        "description": "Device IP/hostname and polling update interval.",
+        "description": "Device IP and polling update interval.",
         "data": {
-          "host": "IP / Hostname",
+          "host": "IP",
           "scan_interval": "Interval (seconds)"
         }
       }
