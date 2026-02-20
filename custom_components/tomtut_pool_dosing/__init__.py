@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import logging
 from datetime import timedelta
+from pathlib import Path
 
 import aiohttp
 
+from homeassistant.components.http import StaticPathConfig
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
@@ -24,10 +26,25 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS: list[str] = ["sensor", "binary_sensor"]
+STATIC_URL_PATH = "/api/tomtut_pool_dosing/static"
+STATIC_REGISTRATION_KEY = "static_path_registered"
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    hass.data.setdefault(DOMAIN, {})
+    domain_data = hass.data.setdefault(DOMAIN, {})
+
+    if not domain_data.get(STATIC_REGISTRATION_KEY):
+        static_dir = Path(__file__).parent / "static"
+        await hass.http.async_register_static_paths(
+            [
+                StaticPathConfig(
+                    STATIC_URL_PATH,
+                    str(static_dir),
+                    cache_headers=False,
+                )
+            ]
+        )
+        domain_data[STATIC_REGISTRATION_KEY] = True
 
     host: str = (entry.options.get(CONF_HOST) or entry.data[CONF_HOST]).strip()
 
@@ -70,7 +87,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         # Wichtig: nicht “hart failen”, sondern HA soll retryen
         raise ConfigEntryNotReady(str(err)) from err
 
-    hass.data[DOMAIN][entry.entry_id] = coordinator
+    domain_data[entry.entry_id] = coordinator
 
     entry.async_on_unload(entry.add_update_listener(_async_update_listener))
 
