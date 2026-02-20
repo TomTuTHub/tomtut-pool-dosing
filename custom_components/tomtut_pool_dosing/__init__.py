@@ -5,8 +5,9 @@ from datetime import timedelta
 from pathlib import Path
 
 import aiohttp
+from aiohttp import web
 
-from homeassistant.components.http import StaticPathConfig
+from homeassistant.components.http import HomeAssistantView, StaticPathConfig
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
@@ -28,24 +29,63 @@ _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS: list[str] = ["sensor", "binary_sensor"]
 STATIC_URL_PATH = "/api/tomtut_pool_dosing/static"
+STATIC_URL_PATH_LOCAL = "/local/tomtut_pool_dosing"
+IMAGE_API_URL = "/api/tomtut_pool_dosing/image/{filename}"
 STATIC_REGISTRATION_KEY = "static_path_registered"
+IMAGE_VIEW_REGISTRATION_KEY = "image_view_registered"
+
+
+class PoolDosingImageView(HomeAssistantView):
+    """Serve packaged images and allow filenames without extension."""
+
+    url = IMAGE_API_URL
+    name = "api:tomtut_pool_dosing:image"
+
+    def __init__(self, static_dir: Path) -> None:
+        self._static_dir = static_dir
+
+    async def get(self, request, filename: str):
+        safe_name = Path(filename).name
+        if safe_name != filename:
+            return web.Response(status=400, text="Invalid filename")
+
+        candidates = [safe_name]
+        if "." not in safe_name:
+            candidates.append(f"{safe_name}.png")
+
+        for candidate in candidates:
+            image_path = self._static_dir / candidate
+            if image_path.is_file():
+                return web.FileResponse(path=image_path, headers={"Cache-Control": "no-store"})
+
+        return web.Response(status=404, text="Image not found")
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     domain_data = hass.data.setdefault(DOMAIN, {})
 
+    static_dir = Path(__file__).parent / "static"
+
     if not domain_data.get(STATIC_REGISTRATION_KEY):
-        static_dir = Path(__file__).parent / "static"
         await hass.http.async_register_static_paths(
             [
                 StaticPathConfig(
                     STATIC_URL_PATH,
                     str(static_dir),
                     cache_headers=False,
-                )
+                ),
+                StaticPathConfig(
+                    STATIC_URL_PATH_LOCAL,
+                    str(static_dir),
+                    cache_headers=False,
+                ),
             ]
         )
         domain_data[STATIC_REGISTRATION_KEY] = True
+
+    if not domain_data.get(IMAGE_VIEW_REGISTRATION_KEY):
+        hass.http.register_view(PoolDosingImageView(static_dir))
+        domain_data[IMAGE_VIEW_REGISTRATION_KEY] = True
 
     host: str = (entry.options.get(CONF_HOST) or entry.data[CONF_HOST]).strip()
 
