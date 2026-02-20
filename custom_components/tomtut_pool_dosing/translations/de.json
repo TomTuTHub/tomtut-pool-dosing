@@ -5,14 +5,14 @@
     "step": {
       "user": {
         "title": "Pool Dosieranlage verbinden",
-        "description": "Gib die lokale IP/Hostname der Dosieranlage an.",
+        "description": "Gib die lokale IP-Adresse der Dosieranlage an.",
         "data": {
-          "host": "IP / Hostname"
+          "host": "IP-Adresse"
         }
       }
     },
     "error": {
-      "cannot_connect": "Verbindung fehlgeschlagen. IP/Host prüfen."
+      "cannot_connect": "Verbindung fehlgeschlagen. IP-Adresse prüfen."
     }
   },
 
@@ -20,9 +20,9 @@
     "step": {
       "init": {
         "title": "Systemoptionen",
-        "description": "IP/Hostname und Update-Intervall für das Polling.",
+        "description": "IP-Adresse und Update-Intervall für das Polling.",
         "data": {
-          "host": "IP / Hostname",
+          "host": "IP-Adresse",
           "scan_interval": "Intervall (Sekunden)"
         }
       }
