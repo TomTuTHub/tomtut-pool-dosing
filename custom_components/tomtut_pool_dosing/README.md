@@ -23,12 +23,11 @@ Documentation: https://docs.myswimmingpool.eu/beniferro/local-api
 ## Dashboard images (static)
 Bilder aus dem integrations-eigenen Ordner `custom_components/tomtut_pool_dosing/static` können direkt in Lovelace verwendet werden – ohne Ablage unter `/config/www`; nutzbar via `/api/...` oder `/local/...`.
 
-Copy & paste Beispiele (empfohlen ist der direkte API-Bildpfad):
+Copy & paste Beispiele (beide Pfade funktionieren):
 ```yaml
-# Empfohlen
-image: /api/tomtut_pool_dosing/image/dosier_v1.png
-
-# Alternativ (weiterhin unterstützt)
+# API-Pfad
 image: /api/tomtut_pool_dosing/static/dosier_v1.png
+
+# Lovelace-/local-Pfad
 image: /local/tomtut_pool_dosing/dosier_v1.png
 ```
