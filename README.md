@@ -33,7 +33,7 @@ Official Beniferro API documentation:
 - Read-only (safe, no control actions)
 - Sensors for pH, Redox (ORP), Flow, Levels, Conductivity (if available)
 - Native Home Assistant Config Flow
-- Use the gear icon in Home Assistant to set how often values are polled from the dosing system
+- Uee the gear icon to Setup Time-Interval von REST poll and other options
 - Designed for dashboards & picture-elements
 
 ---
