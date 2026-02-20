@@ -34,6 +34,17 @@ Official Beniferro API documentation:
 - Sensors for pH, Redox (ORP), Flow and injektion-pumps
 - Use the gear icon to Setup Time-Interval for REST poll intervall and set IP
 
+## Dashboard images (static)
+Bilder aus dem integrations-eigenen Ordner `custom_components/tomtut_pool_dosing/static` können direkt in Lovelace verwendet werden – ohne Ablage unter `/config/www` und ohne `/local`-Pfad.
+
+Copy & paste Beispiele:
+```yaml
+image: /api/tomtut_pool_dosing/static/dosier_v1.png
+image: /api/tomtut_pool_dosing/static/dosier_v2.png
+image: /api/tomtut_pool_dosing/static/dosier_v3.png
+image: /api/tomtut_pool_dosing/static/dosier_v4.png
+```
+
 ---
 
 ## Compatibility
@@ -82,14 +93,3 @@ MIT
 
 Das war TomTuT,
 bleib hart am Gas!
-
-## Dashboard images (static)
-Bilder aus dem integrations-eigenen Ordner `custom_components/tomtut_pool_dosing/static` können direkt in Lovelace verwendet werden – ohne Ablage unter `/config/www` und ohne `/local`-Pfad.
-
-Copy & paste Beispiele:
-```yaml
-image: /api/tomtut_pool_dosing/static/dosier_v1.png
-image: /api/tomtut_pool_dosing/static/dosier_v2.png
-image: /api/tomtut_pool_dosing/static/dosier_v3.png
-image: /api/tomtut_pool_dosing/static/dosier_v4.png
-```
