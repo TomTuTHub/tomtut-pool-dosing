@@ -2,18 +2,20 @@
 
 This custom integration reads measurements and relay states from Beniferro Gen2 local HTTP API.
 
-## Install (local)
-Copy the `tomtut_pool_dosing` folder to `<config>/custom_components/` and restart Home Assistant.
-
 ## Install via HACS
-1. Create a GitHub repo with this content.
-2. Add `hacs.json` and push a release / tag.
-3. In HACS → Integrations → … → Add custom repository by URL (category: integration).
-4. Install and restart.
+1. In HACS → Integrations → … → Add custom repository by URL (category: integration).
+   1.1 https://github.com/TomTuTHub/tomtut-pool-dosing
+2. Install and restart.
 
-## Notes
-- API endpoints: `/api/measurements` and `/api/relays`.
-- The integration is read-only (device API is read-only).
-- Options: polling interval in seconds (via Integration options). Changing options reloads the entry.
+PS: I am working on that it will be available out-of-the-box in HACS :) 
 
+Alternative: 
+Downlaod from https://github.com/TomTuTHub/tomtut-pool-dosing and 
+copy the `tomtut_pool_dosing` folder to `<config>/custom_components/` and restart Home Assistant.
+
+## Configuring
+Install TomTuT under:
+Einstellungen - Geräte & Dienste - Integration hinzufügen - "TomTuT Pool Dosing"
+
+## Official REST API
 Documentation: https://docs.myswimmingpool.eu/beniferro/local-api
