@@ -28,6 +28,7 @@ _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS: list[str] = ["sensor", "binary_sensor"]
 STATIC_URL_PATH = "/api/tomtut_pool_dosing/static"
+STATIC_URL_PATH_LOCAL = "/local/tomtut_pool_dosing"
 STATIC_REGISTRATION_KEY = "static_path_registered"
 
 
@@ -42,7 +43,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                     STATIC_URL_PATH,
                     str(static_dir),
                     cache_headers=False,
-                )
+                ),
+                StaticPathConfig(
+                    STATIC_URL_PATH_LOCAL,
+                    str(static_dir),
+                    cache_headers=False,
+                ),
             ]
         )
         domain_data[STATIC_REGISTRATION_KEY] = True
