@@ -42,7 +42,7 @@ class TomTuTPoolDosingConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         name = (user_input.get(CONF_NAME) or "").strip()
         host = (user_input.get(CONF_HOST) or "").strip()
 
-        if not await self._async_test_connection(host):
+        if not await _async_test_connection(self.hass, host):
             errors["base"] = "cannot_connect"
             return self.async_show_form(
                 step_id="user",
@@ -63,22 +63,23 @@ class TomTuTPoolDosingConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data={CONF_NAME: name, CONF_HOST: host},
         )
 
-    async def _async_test_connection(self, host: str) -> bool:
-        session = async_get_clientsession(self.hass)
-        url = f"http://{host}{API_PATH_MEASUREMENTS}"
-        try:
-            async with session.get(url, timeout=aiohttp.ClientTimeout(total=8)) as resp:
-                if resp.status != 200:
-                    return False
-                data = await resp.json()
-            return isinstance(data, dict) and "measurements" in data
-        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError):
-            return False
-
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):
         return TomTuTPoolDosingOptionsFlowHandler()
+
+
+async def _async_test_connection(hass, host: str) -> bool:
+    session = async_get_clientsession(hass)
+    url = f"http://{host}{API_PATH_MEASUREMENTS}"
+    try:
+        async with session.get(url, timeout=aiohttp.ClientTimeout(total=8)) as resp:
+            if resp.status != 200:
+                return False
+            data = await resp.json()
+        return isinstance(data, dict) and "measurements" in data
+    except (aiohttp.ClientError, asyncio.TimeoutError, ValueError):
+        return False
 
 
 MIN_SCAN_INTERVAL = 5
@@ -87,6 +88,8 @@ MAX_SCAN_INTERVAL = 300
 
 class TomTuTPoolDosingOptionsFlowHandler(config_entries.OptionsFlow):
     async def async_step_init(self, user_input=None) -> FlowResult:
+        current_host = (self.config_entry.options.get(CONF_HOST) or self.config_entry.data.get(CONF_HOST) or "").strip()
+
         if user_input is None:
             current = self._normalize_scan_interval(
                 self.config_entry.options.get(CONF_SCAN_INTERVAL)
@@ -95,6 +98,7 @@ class TomTuTPoolDosingOptionsFlowHandler(config_entries.OptionsFlow):
                 step_id="init",
                 data_schema=vol.Schema(
                     {
+                        vol.Required(CONF_HOST, default=current_host): str,
                         vol.Required(CONF_SCAN_INTERVAL, default=int(current)): vol.All(
                             vol.Coerce(int),
                             vol.Range(min=MIN_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL),
@@ -103,9 +107,36 @@ class TomTuTPoolDosingOptionsFlowHandler(config_entries.OptionsFlow):
                 ),
             )
 
+        errors: dict[str, str] = {}
+        host = (user_input.get(CONF_HOST) or "").strip()
+
+        if not await _async_test_connection(self.hass, host):
+            errors["base"] = "cannot_connect"
+
+        if errors:
+            return self.async_show_form(
+                step_id="init",
+                data_schema=vol.Schema(
+                    {
+                        vol.Required(CONF_HOST, default=host or current_host): str,
+                        vol.Required(
+                            CONF_SCAN_INTERVAL,
+                            default=self._normalize_scan_interval(
+                                user_input.get(CONF_SCAN_INTERVAL)
+                            ),
+                        ): vol.All(
+                            vol.Coerce(int),
+                            vol.Range(min=MIN_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL),
+                        ),
+                    }
+                ),
+                errors=errors,
+            )
+
         return self.async_create_entry(
             title="",
             data={
+                CONF_HOST: host,
                 CONF_SCAN_INTERVAL: self._normalize_scan_interval(
                     user_input.get(CONF_SCAN_INTERVAL)
                 )
