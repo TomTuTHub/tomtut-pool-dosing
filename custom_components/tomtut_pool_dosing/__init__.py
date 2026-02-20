@@ -11,6 +11,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import (
@@ -89,6 +90,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     domain_data[entry.entry_id] = coordinator
 
+    await _async_remove_stale_last_successful_update_entity(hass, entry)
+
     entry.async_on_unload(entry.add_update_listener(_async_update_listener))
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
@@ -105,3 +108,26 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if unload_ok:
         hass.data[DOMAIN].pop(entry.entry_id, None)
     return unload_ok
+
+
+async def _async_remove_stale_last_successful_update_entity(
+    hass: HomeAssistant, entry: ConfigEntry
+) -> None:
+    """Remove stale diagnostics entity from older versions.
+
+    Some previous integration versions created a "Last Successful Update" sensor,
+    which is no longer provided. This prevents a persistent "entity no longer
+    provided" warning for users after updating.
+    """
+    registry = er.async_get(hass)
+    stale_suffixes = {
+        "_last_successful_update",
+        "_last_successful",
+        "_last_update_successful",
+    }
+
+    for entity_entry in er.async_entries_for_config_entry(registry, entry.entry_id):
+        unique_id = entity_entry.unique_id or ""
+        original_name = (entity_entry.original_name or "").strip().lower()
+        if unique_id.endswith(tuple(stale_suffixes)) or original_name == "last successful update":
+            registry.async_remove(entity_entry.entity_id)
