@@ -1,96 +1,37 @@
 # TomTuT Pool Dosing
 
-Community-driven Home Assistant integration for **Beniferro pool dosing systems**
-using the officially documented **local REST API**.
+Community Home Assistant integration for Beniferro Gen2 pool dosing systems via local REST API.
 
-Read-only, local polling.
+## Wichtig
+Diese Integration ist ein unabhängiges Community-Projekt und nicht von Beniferro/Poolsana beauftragt oder supportet.
 
-Maintained by **TomTuT**.
+## Dashboard-Bilder aus der Integration
+Die PNG-Dateien im Ordner `custom_components/tomtut_pool_dosing/static` können direkt in Lovelace genutzt werden.
 
----
+Verwende dafür den API-Pfad:
 
-## Important
-⚠️ This integration is an **independent community project**.
-
-- It is **not developed, commissioned, or supported** by Beniferro or Poolsana.
-- It exists solely because Beniferro provides a **publicly documented local REST API**.
-
-### Cloud / App / Setup note (important!)
-- The **official app and initial device setup** may rely on Beniferro’s **cloud services**.
-- **Probe calibration and configuration changes** currently must be done via the **official app** (and therefore typically via the cloud).
-- This Home Assistant integration is **read-only** and currently supports **local Wifi/LAN reading** of measurements via the REST API **without a cloud requirement for reading**.
-
-More background (German):  
-👉 https://tomtut.de/dosieranlage
-
-Official Beniferro API documentation:  
-👉 https://docs.myswimmingpool.eu/beniferro/local-api
-
----
-
-## Features
-- Local HTTP polling of measurements (LAN)
-- Read-only (safe, no control actions (yet, i hope))
-- Sensors for pH, Redox (ORP), Flow and injektion-pumps
-- Use the gear icon to Setup Time-Interval for REST poll intervall and set IP
-
-## Dashboard images (static)
-Bilder aus dem integrations-eigenen Ordner `custom_components/tomtut_pool_dosing/static` können direkt in Lovelace verwendet werden – ohne Ablage unter `/config/www`; nutzbar via `/api/...` oder `/local/...`.
-
-Copy & paste Beispiele (beide Pfade funktionieren):
 ```yaml
-# API-Pfad
 image: /api/tomtut_pool_dosing/static/dosier_v1.png
-
-# Lovelace-/local-Pfad
-image: /local/tomtut_pool_dosing/dosier_v1.png
 ```
 
----
+Weitere Dateien:
 
-## Compatibility
-- **Manufacturer:** Beniferro  
-- **Hardware generation:** Gen2 devices
-- Tested with installations sold in Germany (e.g. via Poolsana)
+- `/api/tomtut_pool_dosing/static/dosier_v2.png`
+- `/api/tomtut_pool_dosing/static/dosier_v3.png`
+- `/api/tomtut_pool_dosing/static/dosier_v4.png`
 
-> Mentioning Poolsana is for context only.  
-> This project has **no affiliation** with Poolsana or Beniferro.
-
----
+## Features
+- Lokales Polling über HTTP (LAN)
+- Read-only Zugriff (keine Steuerbefehle)
+- Sensoren für pH, Redox, Flow und Relais/Pumpen
 
 ## Installation
-Installation via **HACS (Custom Repository)**.
-
-The device must be reachable in the local network for polling the REST API.
-
----
+- Über HACS als Custom Repository: `https://github.com/TomTuTHub/tomtut-pool-dosing`
+- Oder manuell den Ordner `tomtut_pool_dosing` nach `<config>/custom_components/` kopieren.
 
 ## API
-Based on the official Beniferro local API:
-- `GET /api/measurements`
-- `GET /api/relays` (optional, read-only)
-
-API reference:  
-👉 https://docs.myswimmingpool.eu/beniferro/local-api
-
-## Support this project
-If you like this integration, you can support my work here:
-👉 https://www.tomtut.de/product/dankeschoen-fuer-thomas-buy-me-a-coffee/
-
----
-
-
-## Disclaimer
-This software is provided **as-is**, without warranty of any kind.
-
-Use at your own risk.
-
----
+Offizielle Dokumentation:
+- https://docs.myswimmingpool.eu/beniferro/local-api
 
 ## License
 MIT
-
----
-
-Das war TomTuT,
-bleib hart am Gas!
