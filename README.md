@@ -30,11 +30,9 @@ Official Beniferro API documentation:
 
 ## Features
 - Local HTTP polling of measurements (LAN)
-- Read-only (safe, no control actions)
-- Sensors for pH, Redox (ORP), Flow, Levels, Conductivity (if available)
-- Native Home Assistant Config Flow
-- Uee the gear icon to Setup Time-Interval von REST poll and other options
-- Designed for dashboards & picture-elements
+- Read-only (safe, no control actions (yet, i hope))
+- Sensors for pH, Redox (ORP), Flow and injektion-pumps
+- Use the gear icon to Setup Time-Interval for REST poll intervall and set IP
 
 ---
 
@@ -63,11 +61,6 @@ Based on the official Beniferro local API:
 API reference:  
 👉 https://docs.myswimmingpool.eu/beniferro/local-api
 
----
-
-## Version
-- **v1.6.3**: Redox (rx) values are normalized to numeric output, so default values like `700,00` are shown without comma as `700`.
-
 ## Support this project
 If you like this integration, you can support my work here:
 👉 https://www.tomtut.de/product/dankeschoen-fuer-thomas-buy-me-a-coffee/
@@ -84,3 +77,8 @@ Use at your own risk.
 
 ## License
 MIT
+
+---
+
+Das war TomTuT,
+bleib hart am Gas! 
