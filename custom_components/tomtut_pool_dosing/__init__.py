@@ -113,12 +113,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 async def _async_remove_stale_last_successful_update_entity(
     hass: HomeAssistant, entry: ConfigEntry
 ) -> None:
-    """Remove stale diagnostics entity from older versions.
-
-    Some previous integration versions created a "Last Successful Update" sensor,
-    which is no longer provided. This prevents a persistent "entity no longer
-    provided" warning for users after updating.
-    """
     registry = er.async_get(hass)
     stale_suffixes = {
         "_last_successful_update",
