@@ -20,9 +20,11 @@
     "step": {
       "init": {
         "title": "Optionen",
-        "description": "Update-Intervall für das Polling (Sekunden).",
+        "description": "IP-Adresse sowie getrennte Update-Intervalle für pH/Redox und Durchfluss (Sekunden).",
         "data": {
-          "scan_interval": "Intervall (Sekunden)"
+          "scan_interval": "Intervall pH/Redox (Sekunden)",
+          "host": "IP-Adresse",
+          "flow_scan_interval": "Intervall Durchfluss (Sekunden)"
         }
       }
     }

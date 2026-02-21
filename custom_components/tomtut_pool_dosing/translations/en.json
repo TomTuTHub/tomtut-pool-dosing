@@ -19,10 +19,11 @@
     "step": {
       "init": {
         "title": "Options",
-        "description": "Device IP and polling update interval.",
+        "description": "Device IP and separate polling intervals for pH/Redox and flow (seconds).",
         "data": {
           "host": "IP",
-          "scan_interval": "Interval (seconds)"
+          "scan_interval": "pH/Redox interval (seconds)",
+          "flow_scan_interval": "Flow interval (seconds)"
         }
       }
     }

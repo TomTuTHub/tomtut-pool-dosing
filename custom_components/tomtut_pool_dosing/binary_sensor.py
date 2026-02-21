@@ -5,11 +5,11 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, RELAYS, CONF_HOST, CONF_NAME
+from .const import COORDINATOR_FLOW, DOMAIN, RELAYS, CONF_HOST, CONF_NAME
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
-    coordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = hass.data[DOMAIN][entry.entry_id][COORDINATOR_FLOW]
 
     entities: list[BinarySensorEntity] = [
         PoolRelayPowerBinary(coordinator, entry, relay_id="1", label=RELAYS["1"]),
@@ -44,7 +44,6 @@ class PoolRelayPowerBinary(_BaseBinary):
         super().__init__(coordinator, entry)
         self._relay_id = relay_id
 
-        # Name wird am Device angehängt, weil _attr_has_entity_name=True
         self._attr_name = f"{label} Power"
         self._attr_unique_id = f"{entry.entry_id}_relay_{relay_id}_power"
         self._attr_icon = "mdi:power-plug"
