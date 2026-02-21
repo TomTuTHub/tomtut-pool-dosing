@@ -13,14 +13,20 @@ from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import (
-    DOMAIN,
+    API_PATH_MEASUREMENTS,
+    CONF_FLOW_SCAN_INTERVAL,
     CONF_HOST,
     CONF_NAME,
     CONF_SCAN_INTERVAL,
+    DEFAULT_FLOW_SCAN_INTERVAL,
     DEFAULT_NAME,
     DEFAULT_SCAN_INTERVAL,
-    API_PATH_MEASUREMENTS,
+    DOMAIN,
 )
+
+MIN_CHEMISTRY_SCAN_INTERVAL = 10
+MIN_FLOW_SCAN_INTERVAL = 5
+MAX_SCAN_INTERVAL = 1800
 
 
 class TomTuTPoolDosingConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -104,27 +110,34 @@ def _is_valid_ip(host: str) -> bool:
     return True
 
 
-MIN_SCAN_INTERVAL = 5
-MAX_SCAN_INTERVAL = 300
-
-
 class TomTuTPoolDosingOptionsFlowHandler(config_entries.OptionsFlow):
     async def async_step_init(self, user_input=None) -> FlowResult:
         current_host = (self.config_entry.options.get(CONF_HOST) or self.config_entry.data.get(CONF_HOST) or "").strip()
 
         if user_input is None:
-            current = self._normalize_scan_interval(
-                self.config_entry.options.get(CONF_SCAN_INTERVAL)
+            chemistry_interval = self._normalize_interval(
+                self.config_entry.options.get(CONF_SCAN_INTERVAL),
+                default_value=int(DEFAULT_SCAN_INTERVAL.total_seconds()),
+                min_value=MIN_CHEMISTRY_SCAN_INTERVAL,
+            )
+            flow_interval = self._normalize_interval(
+                self.config_entry.options.get(CONF_FLOW_SCAN_INTERVAL),
+                default_value=int(DEFAULT_FLOW_SCAN_INTERVAL.total_seconds()),
+                min_value=MIN_FLOW_SCAN_INTERVAL,
             )
             return self.async_show_form(
                 step_id="init",
                 data_schema=vol.Schema(
                     {
                         vol.Required(CONF_HOST, default=current_host): str,
-                        vol.Required(CONF_SCAN_INTERVAL, default=int(current)): vol.All(
+                        vol.Required(CONF_SCAN_INTERVAL, default=chemistry_interval): vol.All(
                             vol.Coerce(int),
-                            vol.Range(min=MIN_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL),
-                        )
+                            vol.Range(min=MIN_CHEMISTRY_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL),
+                        ),
+                        vol.Required(CONF_FLOW_SCAN_INTERVAL, default=flow_interval): vol.All(
+                            vol.Coerce(int),
+                            vol.Range(min=MIN_FLOW_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL),
+                        ),
                     }
                 ),
             )
@@ -138,6 +151,17 @@ class TomTuTPoolDosingOptionsFlowHandler(config_entries.OptionsFlow):
         elif not await _async_test_connection(self.hass, host):
             errors["base"] = "cannot_connect"
 
+        chemistry_interval = self._normalize_interval(
+            user_input.get(CONF_SCAN_INTERVAL),
+            default_value=int(DEFAULT_SCAN_INTERVAL.total_seconds()),
+            min_value=MIN_CHEMISTRY_SCAN_INTERVAL,
+        )
+        flow_interval = self._normalize_interval(
+            user_input.get(CONF_FLOW_SCAN_INTERVAL),
+            default_value=int(DEFAULT_FLOW_SCAN_INTERVAL.total_seconds()),
+            min_value=MIN_FLOW_SCAN_INTERVAL,
+        )
+
         if errors:
             return self.async_show_form(
                 step_id="init",
@@ -146,12 +170,17 @@ class TomTuTPoolDosingOptionsFlowHandler(config_entries.OptionsFlow):
                         vol.Required(CONF_HOST, default=host or current_host): str,
                         vol.Required(
                             CONF_SCAN_INTERVAL,
-                            default=self._normalize_scan_interval(
-                                user_input.get(CONF_SCAN_INTERVAL)
-                            ),
+                            default=chemistry_interval,
                         ): vol.All(
                             vol.Coerce(int),
-                            vol.Range(min=MIN_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL),
+                            vol.Range(min=MIN_CHEMISTRY_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL),
+                        ),
+                        vol.Required(
+                            CONF_FLOW_SCAN_INTERVAL,
+                            default=flow_interval,
+                        ): vol.All(
+                            vol.Coerce(int),
+                            vol.Range(min=MIN_FLOW_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL),
                         ),
                     }
                 ),
@@ -162,16 +191,13 @@ class TomTuTPoolDosingOptionsFlowHandler(config_entries.OptionsFlow):
             title="",
             data={
                 CONF_HOST: host,
-                CONF_SCAN_INTERVAL: self._normalize_scan_interval(
-                    user_input.get(CONF_SCAN_INTERVAL)
-                )
+                CONF_SCAN_INTERVAL: chemistry_interval,
+                CONF_FLOW_SCAN_INTERVAL: flow_interval,
             },
         )
 
     @staticmethod
-    def _normalize_scan_interval(value) -> int:
-        default_value = int(DEFAULT_SCAN_INTERVAL.total_seconds())
-
+    def _normalize_interval(value, default_value: int, min_value: int) -> int:
         if value is None:
             return default_value
         if isinstance(value, timedelta):
@@ -182,4 +208,4 @@ class TomTuTPoolDosingOptionsFlowHandler(config_entries.OptionsFlow):
         except (TypeError, ValueError):
             return default_value
 
-        return max(MIN_SCAN_INTERVAL, min(MAX_SCAN_INTERVAL, interval))
+        return max(min_value, min(MAX_SCAN_INTERVAL, interval))

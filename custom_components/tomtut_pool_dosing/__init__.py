@@ -10,18 +10,22 @@ from homeassistant.components.http import StaticPathConfig
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import (
-    DOMAIN,
+    API_PATH_MEASUREMENTS,
+    API_PATH_RELAYS,
+    CONF_FLOW_SCAN_INTERVAL,
     CONF_HOST,
     CONF_NAME,
     CONF_SCAN_INTERVAL,
+    COORDINATOR_CHEMISTRY,
+    COORDINATOR_FLOW,
+    DEFAULT_FLOW_SCAN_INTERVAL,
     DEFAULT_SCAN_INTERVAL,
-    API_PATH_MEASUREMENTS,
-    API_PATH_RELAYS,
+    DOMAIN,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -49,10 +53,22 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     host: str = (entry.options.get(CONF_HOST) or entry.data[CONF_HOST]).strip()
 
-    scan_interval = entry.options.get(
-        CONF_SCAN_INTERVAL, int(DEFAULT_SCAN_INTERVAL.total_seconds())
+    chemistry_interval = timedelta(
+        seconds=int(
+            entry.options.get(
+                CONF_SCAN_INTERVAL,
+                int(DEFAULT_SCAN_INTERVAL.total_seconds()),
+            )
+        )
     )
-    update_interval = timedelta(seconds=int(scan_interval))
+    flow_interval = timedelta(
+        seconds=int(
+            entry.options.get(
+                CONF_FLOW_SCAN_INTERVAL,
+                int(DEFAULT_FLOW_SCAN_INTERVAL.total_seconds()),
+            )
+        )
+    )
 
     session = async_get_clientsession(hass)
 
@@ -62,7 +78,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             resp.raise_for_status()
             return await resp.json()
 
-    async def _async_update() -> dict:
+    async def _async_update_chemistry() -> dict:
+        try:
+            return dict(await _fetch_json(API_PATH_MEASUREMENTS) or {})
+        except Exception as err:
+            raise UpdateFailed(err) from err
+
+    async def _async_update_flow() -> dict:
         try:
             measurements_payload = await _fetch_json(API_PATH_MEASUREMENTS)
             relays_payload = await _fetch_json(API_PATH_RELAYS)
@@ -74,21 +96,31 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         merged["relays_version"] = (relays_payload or {}).get("version")
         return merged
 
-    coordinator = DataUpdateCoordinator(
+    chemistry_coordinator = DataUpdateCoordinator(
         hass=hass,
         logger=_LOGGER,
-        name=entry.data.get(CONF_NAME, entry.title),
-        update_method=_async_update,
-        update_interval=update_interval,
+        name=f"{entry.data.get(CONF_NAME, entry.title)} Chemistry",
+        update_method=_async_update_chemistry,
+        update_interval=chemistry_interval,
+    )
+    flow_coordinator = DataUpdateCoordinator(
+        hass=hass,
+        logger=_LOGGER,
+        name=f"{entry.data.get(CONF_NAME, entry.title)} Flow",
+        update_method=_async_update_flow,
+        update_interval=flow_interval,
     )
 
     try:
-        await coordinator.async_config_entry_first_refresh()
+        await chemistry_coordinator.async_config_entry_first_refresh()
+        await flow_coordinator.async_config_entry_first_refresh()
     except UpdateFailed as err:
-        # Wichtig: nicht “hart failen”, sondern HA soll retryen
         raise ConfigEntryNotReady(str(err)) from err
 
-    domain_data[entry.entry_id] = coordinator
+    domain_data[entry.entry_id] = {
+        COORDINATOR_CHEMISTRY: chemistry_coordinator,
+        COORDINATOR_FLOW: flow_coordinator,
+    }
 
     await _async_remove_stale_last_successful_update_entity(hass, entry)
 
@@ -99,7 +131,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
 async def _async_update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Handle options update by reloading the config entry."""
     await hass.config_entries.async_reload(entry.entry_id)
 
 

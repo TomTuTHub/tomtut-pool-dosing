@@ -7,26 +7,33 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import (
-    DOMAIN,
-    MEASUREMENTS,
+    CONF_FLOW_SCAN_INTERVAL,
     CONF_HOST,
     CONF_NAME,
     CONF_SCAN_INTERVAL,
+    COORDINATOR_CHEMISTRY,
+    COORDINATOR_FLOW,
+    DEFAULT_FLOW_SCAN_INTERVAL,
     DEFAULT_SCAN_INTERVAL,
+    DOMAIN,
+    MEASUREMENTS,
 )
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
-    coordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinators = hass.data[DOMAIN][entry.entry_id]
+    chemistry_coordinator = coordinators[COORDINATOR_CHEMISTRY]
+    flow_coordinator = coordinators[COORDINATOR_FLOW]
 
     entities: list[SensorEntity] = [
-        PoolPhSensor(coordinator, entry),
-        PoolRedoxSensor(coordinator, entry),
-        PoolFlowSwitchSensor(coordinator, entry),
-        PoolFirmwareVersionSensor(coordinator, entry),
-        PoolMacSensor(coordinator, entry),
-        PoolDeviceIpSensor(coordinator, entry),
-        PoolConfiguredScanIntervalSensor(coordinator, entry),
+        PoolPhSensor(chemistry_coordinator, entry),
+        PoolRedoxSensor(chemistry_coordinator, entry),
+        PoolFlowSwitchSensor(flow_coordinator, entry),
+        PoolFirmwareVersionSensor(chemistry_coordinator, entry),
+        PoolMacSensor(chemistry_coordinator, entry),
+        PoolDeviceIpSensor(chemistry_coordinator, entry),
+        PoolConfiguredScanIntervalSensor(chemistry_coordinator, entry),
+        PoolConfiguredFlowScanIntervalSensor(flow_coordinator, entry),
     ]
 
     async_add_entities(entities)
@@ -58,7 +65,6 @@ class PoolPhSensor(_Base):
         meta = MEASUREMENTS["ph"]
         self._key = "ph"
 
-        # HA erzeugt daraus: "<Gerät> pH" (weil _attr_has_entity_name=True)
         self._attr_name = meta.get("name", "pH")
         self._attr_unique_id = f"{entry.entry_id}_ph"
         self._attr_icon = meta.get("icon")
@@ -115,7 +121,6 @@ class PoolFlowSwitchSensor(_Base):
         self._attr_name = meta.get("name", "Flow")
         self._attr_unique_id = f"{entry.entry_id}_flowswitch"
         self._attr_icon = meta.get("icon")
-        # flowswitch ist 0/1 -> keine Einheit
         self._attr_native_unit_of_measurement = None
 
     @property
@@ -177,7 +182,7 @@ class PoolConfiguredScanIntervalSensor(_Base):
 
     def __init__(self, coordinator, entry: ConfigEntry):
         super().__init__(coordinator, entry)
-        self._attr_name = "Configured Scan Interval"
+        self._attr_name = "Configured Chemistry Interval"
         self._attr_unique_id = f"{entry.entry_id}_scan_interval"
 
     @property
@@ -186,5 +191,26 @@ class PoolConfiguredScanIntervalSensor(_Base):
             self._entry.options.get(
                 CONF_SCAN_INTERVAL,
                 int(DEFAULT_SCAN_INTERVAL.total_seconds()),
+            )
+        )
+
+
+class PoolConfiguredFlowScanIntervalSensor(_Base):
+    _attr_has_entity_name = True
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_icon = "mdi:waves-arrow-right"
+    _attr_native_unit_of_measurement = "s"
+
+    def __init__(self, coordinator, entry: ConfigEntry):
+        super().__init__(coordinator, entry)
+        self._attr_name = "Configured Flow Interval"
+        self._attr_unique_id = f"{entry.entry_id}_flow_scan_interval"
+
+    @property
+    def native_value(self):
+        return int(
+            self._entry.options.get(
+                CONF_FLOW_SCAN_INTERVAL,
+                int(DEFAULT_FLOW_SCAN_INTERVAL.total_seconds()),
             )
         )
