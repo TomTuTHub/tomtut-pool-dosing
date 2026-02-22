@@ -2,35 +2,39 @@
 
 Community Home Assistant integration for Beniferro Gen2 pool dosing systems via local REST API.
 
-## Wichtig
-Diese Integration ist ein unabhängiges Community-Projekt und nicht von Beniferro/Poolsana beauftragt oder supportet.
+## Important
+This integration is an independent community project and is not commissioned, endorsed, or supported by Beniferro/Poolsana.
 
-## Dashboard-Bilder aus der Integration
-Die PNG-Dateien im Ordner `custom_components/tomtut_pool_dosing/static` können direkt in Lovelace genutzt werden.
+## Which README is required?
+For Home Assistant / HACS, this repository uses **one** README file: `README.md` in the repository root.
+There is no second README required in this project.
 
-Verwende dafür den API-Pfad:
+## Dashboard images from the integration
+The PNG files in `custom_components/tomtut_pool_dosing/static` can be used directly in Lovelace.
+
+Use this API path:
 
 ```yaml
 image: /api/tomtut_pool_dosing/static/dosier_v1.png
 ```
 
-Weitere Dateien:
+Additional files:
 
 - `/api/tomtut_pool_dosing/static/dosier_v2.png`
 - `/api/tomtut_pool_dosing/static/dosier_v3.png`
 - `/api/tomtut_pool_dosing/static/dosier_v4.png`
 
 ## Features
-- Lokales Polling über HTTP (LAN)
-- Read-only Zugriff (keine Steuerbefehle)
-- Sensoren für pH, Redox, Flow und Relais/Pumpen
+- Local polling via HTTP (LAN)
+- Read-only access (no control commands)
+- Sensors for pH, redox, flow, and relay/pump status
 
 ## Installation
-- Über HACS als Custom Repository: `https://github.com/TomTuTHub/tomtut-pool-dosing`
-- Oder manuell den Ordner `tomtut_pool_dosing` nach `<config>/custom_components/` kopieren.
+- Via HACS as a custom repository: `https://github.com/TomTuTHub/tomtut-pool-dosing`
+- Or manually copy the `tomtut_pool_dosing` folder to `<config>/custom_components/`
 
 ## API
-Offizielle Dokumentation:
+Official documentation:
 - https://docs.myswimmingpool.eu/beniferro/local-api
 
 ## License
