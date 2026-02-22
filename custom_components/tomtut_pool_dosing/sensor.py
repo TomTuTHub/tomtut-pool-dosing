@@ -53,7 +53,6 @@ class _Base(CoordinatorEntity, SensorEntity):
             "name": self._device_name,
             "manufacturer": "Vendor-neutral (Beniferro/Poolsana compatible)",
             "model": "Pool Dosing (local API)",
-            "configuration_url": f"http://{self._host}",
         }
 
 
