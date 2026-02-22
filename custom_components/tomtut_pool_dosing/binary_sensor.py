@@ -44,9 +44,9 @@ class PoolRelayPowerBinary(_BaseBinary):
         super().__init__(coordinator, entry)
         self._relay_id = relay_id
 
-        self._attr_name = f"{label} Power"
+        self._attr_name = label
         self._attr_unique_id = f"{entry.entry_id}_relay_{relay_id}_power"
-        self._attr_icon = "mdi:power-plug"
+        self._attr_icon = "mdi:pump"
 
     @property
     def is_on(self):
