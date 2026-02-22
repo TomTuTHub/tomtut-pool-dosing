@@ -10,8 +10,8 @@ CONF_SCAN_INTERVAL = "scan_interval"
 CONF_FLOW_SCAN_INTERVAL = "flow_scan_interval"
 
 DEFAULT_NAME = "TomTuT Pool Dosieranlage"
-DEFAULT_SCAN_INTERVAL = timedelta(seconds=120)
-DEFAULT_FLOW_SCAN_INTERVAL = timedelta(seconds=5)
+DEFAULT_SCAN_INTERVAL = timedelta(seconds=420)
+DEFAULT_FLOW_SCAN_INTERVAL = timedelta(seconds=12)
 
 API_PATH_MEASUREMENTS = "/api/measurements"
 API_PATH_RELAYS = "/api/relays"
@@ -26,6 +26,6 @@ MEASUREMENTS: dict[str, dict] = {
 }
 
 RELAYS: dict[str, str] = {
-    "1": "Relay 1",
-    "2": "Relay 2",
+    "1": "pH Pumpe",
+    "2": "Redox Pumpe",
 }
