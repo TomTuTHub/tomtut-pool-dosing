@@ -1,9 +1,10 @@
 {
   "domain": "tomtut_pool_dosing",
   "name": "TomTuT Pool Dosing",
-  "codeowners": ["@TomTuTHub"],
+  "codeowners": [
+    "@TomTuTHub"
+  ],
   "config_flow": true,
-  "documentation": "https://tomtut.de/ha-integration-tomtut-pool-dosier-link",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/TomTuTHub/tomtut-pool-dosing/issues",
   "requirements": [],

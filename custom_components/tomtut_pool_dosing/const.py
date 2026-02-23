@@ -10,7 +10,7 @@ CONF_SCAN_INTERVAL = "scan_interval"
 CONF_FLOW_SCAN_INTERVAL = "flow_scan_interval"
 
 DEFAULT_NAME = "TomTuT Pool Dosieranlage"
-DEFAULT_SCAN_INTERVAL = timedelta(seconds=420)
+DEFAULT_SCAN_INTERVAL = timedelta(seconds=60)
 DEFAULT_FLOW_SCAN_INTERVAL = timedelta(seconds=12)
 
 API_PATH_MEASUREMENTS = "/api/measurements"
