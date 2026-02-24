@@ -2,7 +2,7 @@
 
 Community Home Assistant integration for **Beniferro Gen2** pool dosing systems via **local REST API** (LAN).
 
-➡️ **More info & guides (German):** https://www.tomtut.de/dosieranlage
+➡️ **More info & guides (German):** https://www.tomtut.de/tomtut-pool-dosieranlage-homeassistant-beniferro-integration-poolsana/
 
 ---
 
