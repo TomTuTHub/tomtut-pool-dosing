@@ -14,4 +14,5 @@ jobs:
       - name: HACS validation
         uses: hacs/action@main
         with:
+          # HACS brand validation may fail because custom integrations are no longer accepted in home-assistant/brands; this integration ships local brand icons for HA 2026.3+ instead.
           category: integration
