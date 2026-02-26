@@ -18,6 +18,7 @@ Use at your own risk.
 - Local polling via HTTP (LAN)
 - Read-only access (no control commands, yet :) )
 - Sensors for **pH**, **Redox**, **Flow**, and **relay/pump status**
+- Supports local brand icons in `custom_components/tomtut_pool_dosing/brand/`; they appear automatically from Home Assistant **2026.3+** via the Brands Proxy API.
 
 ---
 
