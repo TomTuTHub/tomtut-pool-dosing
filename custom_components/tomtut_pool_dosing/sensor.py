@@ -30,6 +30,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         PoolRedoxSensor(chemistry_coordinator, entry),
         PoolFlowSwitchSensor(flow_coordinator, entry),
         PoolFirmwareVersionSensor(chemistry_coordinator, entry),
+        PoolDosingSystemNameSensor(chemistry_coordinator, entry),
         PoolMacSensor(chemistry_coordinator, entry),
         PoolDeviceIpSensor(chemistry_coordinator, entry),
         PoolConfiguredScanIntervalSensor(chemistry_coordinator, entry),
@@ -156,6 +157,21 @@ class PoolMacSensor(_Base):
     @property
     def native_value(self):
         return (self.coordinator.data or {}).get("mac")
+
+
+class PoolDosingSystemNameSensor(_Base):
+    _attr_has_entity_name = True
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_icon = "mdi:badge-account-horizontal-outline"
+
+    def __init__(self, coordinator, entry: ConfigEntry):
+        super().__init__(coordinator, entry)
+        self._attr_name = "Name der Dosieranlage"
+        self._attr_unique_id = f"{entry.entry_id}_system_name"
+
+    @property
+    def native_value(self):
+        return self._device_name
 
 
 class PoolDeviceIpSensor(_Base):
