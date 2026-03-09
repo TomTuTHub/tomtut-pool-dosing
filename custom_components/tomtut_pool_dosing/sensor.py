@@ -166,7 +166,7 @@ class PoolDosingSystemNameSensor(_Base):
 
     def __init__(self, coordinator, entry: ConfigEntry):
         super().__init__(coordinator, entry)
-        self._attr_name = "Name der Dosieranlage"
+        self._attr_name = "Name"
         self._attr_unique_id = f"{entry.entry_id}_system_name"
 
     @property
