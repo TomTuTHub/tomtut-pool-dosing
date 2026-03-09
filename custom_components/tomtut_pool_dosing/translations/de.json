@@ -7,7 +7,7 @@
         "description": "Gib die lokale IP-Adresse der Dosieranlage an.",
         "data": {
           "host": "IP-Adresse",
-          "name": "Name"
+          "name": "Name der Dosieranlage"
         }
       }
     },
