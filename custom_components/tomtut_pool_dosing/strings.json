@@ -6,7 +6,7 @@
         "title": "Pool Dosieranlage verbinden",
         "description": "Gib einen Namen und die lokale IP-Adresse der Dosieranlage an.",
         "data": {
-          "name": "Name der Dosieranlage",
+          "name": "Name",
           "host": "IP-Adresse"
         }
       }

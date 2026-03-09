@@ -5,7 +5,7 @@
         "title": "Connect pool dosing device",
         "description": "Enter a name and the device's local IP.",
         "data": {
-          "name": "Device name",
+          "name": "Name",
           "host": "IP"
         }
       }
