@@ -3,28 +3,28 @@
   "config": {
     "step": {
       "user": {
-        "title": "Pool Dosieranlage verbinden",
-        "description": "Gib einen Namen und die lokale IP-Adresse der Dosieranlage an.",
+        "title": "Connect pool dosing device",
+        "description": "Enter a name and the device's local IP.",
         "data": {
-          "name": "Name der Dosieranlage",
-          "host": "IP-Adresse"
+          "name": "Device name",
+          "host": "IP"
         }
       }
     },
     "error": {
-      "cannot_connect": "Verbindung fehlgeschlagen. IP-Adresse prüfen.",
-      "invalid_ip": "Ungültige IP-Adresse. Bitte nur eine IP eingeben."
+      "cannot_connect": "Failed to connect. Check IP.",
+      "invalid_ip": "Invalid IP address. Please enter IP only."
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "Optionen",
-        "description": "IP-Adresse sowie getrennte Update-Intervalle für pH/Redox und Durchfluss (Sekunden).",
+        "title": "Options",
+        "description": "Device IP and separate polling intervals for pH/Redox and flow (seconds).",
         "data": {
-          "scan_interval": "Intervall pH/Redox (Sekunden)",
-          "host": "IP-Adresse",
-          "flow_scan_interval": "Intervall Durchfluss (Sekunden)"
+          "host": "IP",
+          "scan_interval": "pH/Redox interval (seconds)",
+          "flow_scan_interval": "Flow interval (seconds)"
         }
       }
     }
