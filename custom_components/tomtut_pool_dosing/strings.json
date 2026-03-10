@@ -28,5 +28,15 @@
         }
       }
     }
+  },
+  "entity": {
+    "binary_sensor": {
+      "relay_1": {
+        "name": "pH Pump"
+      },
+      "relay_2": {
+        "name": "Redox Pump"
+      }
+    }
   }
 }

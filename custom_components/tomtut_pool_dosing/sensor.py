@@ -4,12 +4,9 @@ from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import (
     CONF_FLOW_SCAN_INTERVAL,
-    CONF_HOST,
-    CONF_NAME,
     CONF_SCAN_INTERVAL,
     COORDINATOR_CHEMISTRY,
     COORDINATOR_FLOW,
@@ -18,6 +15,7 @@ from .const import (
     DOMAIN,
     MEASUREMENTS,
 )
+from .entity import PoolDosingEntity
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
@@ -28,9 +26,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     entities: list[SensorEntity] = [
         PoolPhSensor(chemistry_coordinator, entry),
         PoolRedoxSensor(chemistry_coordinator, entry),
-        PoolFlowSwitchSensor(flow_coordinator, entry),
+        PoolFlowSwitchSensor(chemistry_coordinator, entry),
         PoolFirmwareVersionSensor(chemistry_coordinator, entry),
-        PoolDosingSystemNameSensor(chemistry_coordinator, entry),
         PoolMacSensor(chemistry_coordinator, entry),
         PoolDeviceIpSensor(chemistry_coordinator, entry),
         PoolConfiguredScanIntervalSensor(chemistry_coordinator, entry),
@@ -40,31 +37,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     async_add_entities(entities)
 
 
-class _Base(CoordinatorEntity, SensorEntity):
-    def __init__(self, coordinator, entry: ConfigEntry):
-        super().__init__(coordinator)
-        self._entry = entry
-        self._device_name = entry.data.get(CONF_NAME, entry.title)
-        self._host = (entry.options.get(CONF_HOST) or entry.data.get(CONF_HOST) or "").strip()
-
-    @property
-    def device_info(self):
-        return {
-            "identifiers": {(DOMAIN, self._entry.entry_id)},
-            "name": self._device_name,
-            "manufacturer": "Vendor-neutral (Beniferro/Poolsana compatible)",
-            "model": "Pool Dosing (local API)",
-        }
+class _Base(PoolDosingEntity, SensorEntity):
+    pass
 
 
 class PoolPhSensor(_Base):
-    _attr_has_entity_name = True
-
     def __init__(self, coordinator, entry: ConfigEntry):
         super().__init__(coordinator, entry)
         meta = MEASUREMENTS["ph"]
         self._key = "ph"
-
         self._attr_name = meta.get("name", "pH")
         self._attr_unique_id = f"{entry.entry_id}_ph"
         self._attr_icon = meta.get("icon")
@@ -78,13 +59,10 @@ class PoolPhSensor(_Base):
 
 
 class PoolRedoxSensor(_Base):
-    _attr_has_entity_name = True
-
     def __init__(self, coordinator, entry: ConfigEntry):
         super().__init__(coordinator, entry)
         meta = MEASUREMENTS["rx"]
         self._key = "rx"
-
         self._attr_name = meta.get("name", "Redox")
         self._attr_unique_id = f"{entry.entry_id}_rx"
         self._attr_icon = meta.get("icon")
@@ -95,29 +73,23 @@ class PoolRedoxSensor(_Base):
     def native_value(self):
         data = (self.coordinator.data or {}).get("measurements", {})
         value = (data.get(self._key, {}) or {}).get("value")
-
         if isinstance(value, str):
             normalized = value.strip().replace(",", ".")
             try:
                 numeric = float(normalized)
             except ValueError:
                 return value
-
             if numeric.is_integer():
                 return int(numeric)
             return numeric
-
         return value
 
 
 class PoolFlowSwitchSensor(_Base):
-    _attr_has_entity_name = True
-
     def __init__(self, coordinator, entry: ConfigEntry):
         super().__init__(coordinator, entry)
         meta = MEASUREMENTS["flowswitch"]
         self._key = "flowswitch"
-
         self._attr_name = meta.get("name", "Flow")
         self._attr_unique_id = f"{entry.entry_id}_flowswitch"
         self._attr_icon = meta.get("icon")
@@ -130,7 +102,6 @@ class PoolFlowSwitchSensor(_Base):
 
 
 class PoolFirmwareVersionSensor(_Base):
-    _attr_has_entity_name = True
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_icon = "mdi:information-outline"
 
@@ -145,7 +116,6 @@ class PoolFirmwareVersionSensor(_Base):
 
 
 class PoolMacSensor(_Base):
-    _attr_has_entity_name = True
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_icon = "mdi:lan"
 
@@ -159,23 +129,7 @@ class PoolMacSensor(_Base):
         return (self.coordinator.data or {}).get("mac")
 
 
-class PoolDosingSystemNameSensor(_Base):
-    _attr_has_entity_name = True
-    _attr_entity_category = EntityCategory.DIAGNOSTIC
-    _attr_icon = "mdi:badge-account-horizontal-outline"
-
-    def __init__(self, coordinator, entry: ConfigEntry):
-        super().__init__(coordinator, entry)
-        self._attr_name = "Name"
-        self._attr_unique_id = f"{entry.entry_id}_system_name"
-
-    @property
-    def native_value(self):
-        return self._device_name
-
-
 class PoolDeviceIpSensor(_Base):
-    _attr_has_entity_name = True
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_icon = "mdi:ip-network-outline"
 
@@ -190,7 +144,6 @@ class PoolDeviceIpSensor(_Base):
 
 
 class PoolConfiguredScanIntervalSensor(_Base):
-    _attr_has_entity_name = True
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_icon = "mdi:timer-cog-outline"
     _attr_native_unit_of_measurement = "s"
@@ -211,7 +164,6 @@ class PoolConfiguredScanIntervalSensor(_Base):
 
 
 class PoolConfiguredFlowScanIntervalSensor(_Base):
-    _attr_has_entity_name = True
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_icon = "mdi:waves-arrow-right"
     _attr_native_unit_of_measurement = "s"

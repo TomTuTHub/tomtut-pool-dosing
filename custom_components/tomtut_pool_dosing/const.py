@@ -9,7 +9,7 @@ CONF_NAME = "name"
 CONF_SCAN_INTERVAL = "scan_interval"
 CONF_FLOW_SCAN_INTERVAL = "flow_scan_interval"
 
-DEFAULT_NAME = "TomTuT Pool Dosieranlage"
+DEFAULT_NAME = "TomTuT Pool Dosing"
 DEFAULT_SCAN_INTERVAL = timedelta(seconds=60)
 DEFAULT_FLOW_SCAN_INTERVAL = timedelta(seconds=12)
 
@@ -25,7 +25,3 @@ MEASUREMENTS: dict[str, dict] = {
     "flowswitch": {"name": "Flow", "unit": None, "icon": "mdi:pump"},
 }
 
-RELAYS: dict[str, str] = {
-    "1": "pH Pumpe",
-    "2": "Redox Pumpe",
-}

@@ -87,15 +87,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     async def _async_update_flow() -> dict:
         try:
-            measurements_payload = await _fetch_json(API_PATH_MEASUREMENTS)
             relays_payload = await _fetch_json(API_PATH_RELAYS)
         except Exception as err:
             raise UpdateFailed(err) from err
 
-        merged: dict = dict(measurements_payload or {})
-        merged["relays"] = (relays_payload or {}).get("relays", {})
-        merged["relays_version"] = (relays_payload or {}).get("version")
-        return merged
+        return {
+            "relays": (relays_payload or {}).get("relays", {}),
+            "relays_version": (relays_payload or {}).get("version"),
+        }
 
     chemistry_coordinator = DataUpdateCoordinator(
         hass=hass,
