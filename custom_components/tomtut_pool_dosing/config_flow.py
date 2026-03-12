@@ -8,8 +8,8 @@ import aiohttp
 import voluptuous as vol
 
 from homeassistant import config_entries
+from homeassistant.config_entries import ConfigFlowResult
 from homeassistant.core import callback
-from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import (
@@ -32,7 +32,7 @@ MAX_SCAN_INTERVAL = 1800
 class TomTuTPoolDosingConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 2
 
-    async def async_step_user(self, user_input=None) -> FlowResult:
+    async def async_step_user(self, user_input=None) -> ConfigFlowResult:
         errors: dict[str, str] = {}
 
         if user_input is None:
@@ -111,7 +111,7 @@ def _is_valid_ip(host: str) -> bool:
 
 
 class TomTuTPoolDosingOptionsFlowHandler(config_entries.OptionsFlow):
-    async def async_step_init(self, user_input=None) -> FlowResult:
+    async def async_step_init(self, user_input=None) -> ConfigFlowResult:
         current_host = (self.config_entry.options.get(CONF_HOST) or self.config_entry.data.get(CONF_HOST) or "").strip()
 
         if user_input is None:

@@ -6,8 +6,8 @@
         "title": "Pool Dosieranlage verbinden",
         "description": "Gib die lokale IP-Adresse der Dosieranlage an.",
         "data": {
-          "host": "IP-Adresse",
-          "name": "Name der Dosieranlage"
+          "name": "Name der Dosieranlage",
+          "host": "IP-Adresse"
         }
       }
     },
@@ -26,6 +26,16 @@
           "scan_interval": "Intervall pH/Redox (Sekunden)",
           "flow_scan_interval": "Intervall Durchfluss (Sekunden)"
         }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "relay_1": {
+        "name": "pH Pumpe"
+      },
+      "relay_2": {
+        "name": "Redox Pumpe"
       }
     }
   }
