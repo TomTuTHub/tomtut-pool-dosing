@@ -107,10 +107,10 @@ MIT
 
 ---
 
-Das war TomTuT, bleib hart am Gas.
-
----
-
 ## Transparency
 
 I'm a trained IT systems specialist with many years of experience in the field. Back in the day it was MCSE — today it's Vibe-Coding. What can I say: I built this integration with the help of **Claude** and **ChatGPT**. There's no way I could have pulled this off on the side otherwise — it would have taken me months. The code has been reviewed and tested by me and runs in my own production setup.
+
+---
+
+Das war TomTuT, bleib hart am Gas.
