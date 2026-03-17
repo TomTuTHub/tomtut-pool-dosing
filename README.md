@@ -108,3 +108,9 @@ MIT
 ---
 
 Das war TomTuT, bleib hart am Gas.
+
+---
+
+## Transparenzhinweis
+
+Diese Integration habe ich via **Vibe Coding mit Claude (Anthropic)** entwickelt. Ich bin kein klassischer Entwickler — ich hab's einfach gemacht. Der Code ist reviewed, getestet und läuft bei mir produktiv. Wer das komisch findet: willkommen in 2026. 🤷
