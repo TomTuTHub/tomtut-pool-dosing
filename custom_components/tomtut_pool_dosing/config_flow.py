@@ -1,0 +1,211 @@
+from __future__ import annotations
+
+import asyncio
+from datetime import timedelta
+import ipaddress
+
+import aiohttp
+import voluptuous as vol
+
+from homeassistant import config_entries
+from homeassistant.config_entries import ConfigFlowResult
+from homeassistant.core import callback
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
+
+from .const import (
+    API_PATH_MEASUREMENTS,
+    CONF_FLOW_SCAN_INTERVAL,
+    CONF_HOST,
+    CONF_NAME,
+    CONF_SCAN_INTERVAL,
+    DEFAULT_FLOW_SCAN_INTERVAL,
+    DEFAULT_NAME,
+    DEFAULT_SCAN_INTERVAL,
+    DOMAIN,
+)
+
+MIN_CHEMISTRY_SCAN_INTERVAL = 5
+MIN_FLOW_SCAN_INTERVAL = 5
+MAX_SCAN_INTERVAL = 1800
+
+
+class TomTuTPoolDosingConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+    VERSION = 2
+
+    async def async_step_user(self, user_input=None) -> ConfigFlowResult:
+        errors: dict[str, str] = {}
+
+        if user_input is None:
+            return self.async_show_form(
+                step_id="user",
+                data_schema=vol.Schema(
+                    {
+                        vol.Required(CONF_NAME, default=DEFAULT_NAME): str,
+                        vol.Required(CONF_HOST): str,
+                    }
+                ),
+            )
+
+        name = (user_input.get(CONF_NAME) or "").strip()
+        host = (user_input.get(CONF_HOST) or "").strip()
+
+        if not _is_valid_ip(host):
+            errors["base"] = "invalid_ip"
+            return self.async_show_form(
+                step_id="user",
+                data_schema=vol.Schema(
+                    {
+                        vol.Required(CONF_NAME, default=name or DEFAULT_NAME): str,
+                        vol.Required(CONF_HOST, default=host): str,
+                    }
+                ),
+                errors=errors,
+            )
+
+        if not await _async_test_connection(self.hass, host):
+            errors["base"] = "cannot_connect"
+            return self.async_show_form(
+                step_id="user",
+                data_schema=vol.Schema(
+                    {
+                        vol.Required(CONF_NAME, default=name or DEFAULT_NAME): str,
+                        vol.Required(CONF_HOST, default=host): str,
+                    }
+                ),
+                errors=errors,
+            )
+
+        await self.async_set_unique_id(host)
+        self._abort_if_unique_id_configured()
+
+        return self.async_create_entry(
+            title=name,
+            data={CONF_NAME: name, CONF_HOST: host},
+        )
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry):
+        return TomTuTPoolDosingOptionsFlowHandler()
+
+
+async def _async_test_connection(hass, host: str) -> bool:
+    session = async_get_clientsession(hass)
+    url = f"http://{host}{API_PATH_MEASUREMENTS}"
+    try:
+        async with session.get(url, timeout=aiohttp.ClientTimeout(total=8)) as resp:
+            if resp.status != 200:
+                return False
+            data = await resp.json()
+        return isinstance(data, dict) and "measurements" in data
+    except (aiohttp.ClientError, asyncio.TimeoutError, ValueError):
+        return False
+
+
+def _is_valid_ip(host: str) -> bool:
+    try:
+        ipaddress.ip_address(host)
+    except ValueError:
+        return False
+    return True
+
+
+class TomTuTPoolDosingOptionsFlowHandler(config_entries.OptionsFlow):
+    async def async_step_init(self, user_input=None) -> ConfigFlowResult:
+        current_host = (self.config_entry.options.get(CONF_HOST) or self.config_entry.data.get(CONF_HOST) or "").strip()
+
+        if user_input is None:
+            chemistry_interval = self._normalize_interval(
+                self.config_entry.options.get(CONF_SCAN_INTERVAL),
+                default_value=int(DEFAULT_SCAN_INTERVAL.total_seconds()),
+                min_value=MIN_CHEMISTRY_SCAN_INTERVAL,
+            )
+            flow_interval = self._normalize_interval(
+                self.config_entry.options.get(CONF_FLOW_SCAN_INTERVAL),
+                default_value=int(DEFAULT_FLOW_SCAN_INTERVAL.total_seconds()),
+                min_value=MIN_FLOW_SCAN_INTERVAL,
+            )
+            return self.async_show_form(
+                step_id="init",
+                data_schema=vol.Schema(
+                    {
+                        vol.Required(CONF_HOST, default=current_host): str,
+                        vol.Required(CONF_SCAN_INTERVAL, default=chemistry_interval): vol.All(
+                            vol.Coerce(int),
+                            vol.Range(min=MIN_CHEMISTRY_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL),
+                        ),
+                        vol.Required(CONF_FLOW_SCAN_INTERVAL, default=flow_interval): vol.All(
+                            vol.Coerce(int),
+                            vol.Range(min=MIN_FLOW_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL),
+                        ),
+                    }
+                ),
+            )
+
+        errors: dict[str, str] = {}
+        host = (user_input.get(CONF_HOST) or "").strip()
+
+        if not _is_valid_ip(host):
+            errors["base"] = "invalid_ip"
+
+        elif not await _async_test_connection(self.hass, host):
+            errors["base"] = "cannot_connect"
+
+        chemistry_interval = self._normalize_interval(
+            user_input.get(CONF_SCAN_INTERVAL),
+            default_value=int(DEFAULT_SCAN_INTERVAL.total_seconds()),
+            min_value=MIN_CHEMISTRY_SCAN_INTERVAL,
+        )
+        flow_interval = self._normalize_interval(
+            user_input.get(CONF_FLOW_SCAN_INTERVAL),
+            default_value=int(DEFAULT_FLOW_SCAN_INTERVAL.total_seconds()),
+            min_value=MIN_FLOW_SCAN_INTERVAL,
+        )
+
+        if errors:
+            return self.async_show_form(
+                step_id="init",
+                data_schema=vol.Schema(
+                    {
+                        vol.Required(CONF_HOST, default=host or current_host): str,
+                        vol.Required(
+                            CONF_SCAN_INTERVAL,
+                            default=chemistry_interval,
+                        ): vol.All(
+                            vol.Coerce(int),
+                            vol.Range(min=MIN_CHEMISTRY_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL),
+                        ),
+                        vol.Required(
+                            CONF_FLOW_SCAN_INTERVAL,
+                            default=flow_interval,
+                        ): vol.All(
+                            vol.Coerce(int),
+                            vol.Range(min=MIN_FLOW_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL),
+                        ),
+                    }
+                ),
+                errors=errors,
+            )
+
+        return self.async_create_entry(
+            title="",
+            data={
+                CONF_HOST: host,
+                CONF_SCAN_INTERVAL: chemistry_interval,
+                CONF_FLOW_SCAN_INTERVAL: flow_interval,
+            },
+        )
+
+    @staticmethod
+    def _normalize_interval(value, default_value: int, min_value: int) -> int:
+        if value is None:
+            return default_value
+        if isinstance(value, timedelta):
+            return int(value.total_seconds())
+
+        try:
+            interval = int(value)
+        except (TypeError, ValueError):
+            return default_value
+
+        return max(min_value, min(MAX_SCAN_INTERVAL, interval))

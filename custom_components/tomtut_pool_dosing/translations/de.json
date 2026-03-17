@@ -1,0 +1,42 @@
+{
+  "title": "TomTuT Pool Dosing",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Pool Dosieranlage verbinden",
+        "description": "Gib die lokale IP-Adresse der Dosieranlage an.",
+        "data": {
+          "name": "Name der Dosieranlage",
+          "host": "IP-Adresse"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Verbindung fehlgeschlagen. IP-Adresse prüfen.",
+      "invalid_ip": "Ungültige IP-Adresse. Bitte nur eine IP eingeben."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Systemoptionen",
+        "description": "IP-Adresse sowie getrennte Update-Intervalle für pH/Redox und Durchfluss (Sekunden).",
+        "data": {
+          "host": "IP-Adresse",
+          "scan_interval": "Intervall pH/Redox (Sekunden)",
+          "flow_scan_interval": "Intervall Durchfluss (Sekunden)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "relay_1": {
+        "name": "pH Pumpe"
+      },
+      "relay_2": {
+        "name": "Redox Pumpe"
+      }
+    }
+  }
+}

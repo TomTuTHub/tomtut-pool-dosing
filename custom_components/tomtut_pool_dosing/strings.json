@@ -1,0 +1,42 @@
+{
+  "title": "TomTuT Pool Dosing",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect pool dosing device",
+        "description": "Enter a name and the device's local IP.",
+        "data": {
+          "name": "Device name",
+          "host": "IP"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect. Check IP.",
+      "invalid_ip": "Invalid IP address. Please enter IP only."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options",
+        "description": "Device IP and separate polling intervals for pH/Redox and flow (seconds).",
+        "data": {
+          "host": "IP",
+          "scan_interval": "pH/Redox interval (seconds)",
+          "flow_scan_interval": "Flow interval (seconds)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "relay_1": {
+        "name": "pH Pump"
+      },
+      "relay_2": {
+        "name": "Redox Pump"
+      }
+    }
+  }
+}
