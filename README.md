@@ -113,4 +113,4 @@ Das war TomTuT, bleib hart am Gas.
 
 ## Transparenzhinweis
 
-Diese Integration habe ich via **Vibe Coding mit Claude (Anthropic)** entwickelt. Ich bin kein klassischer Entwickler — ich hab's einfach gemacht. Der Code ist reviewed, getestet und läuft bei mir produktiv. Wer das komisch findet: willkommen in 2026. 🤷
+Ich bin gelernter Fachinformatiker für Systemintegration und habe mittlerweile sehr viele Jahre Erfahrung in der IT. Früher noch MCSE — heute Vibe-Coding. Was soll ich sagen: Diese Integration habe ich mit Hilfe von **Claude** und **ChatGPT** erstellt. Anders hätte ich das nie nebenbei geschafft und vermutlich Monate daran entwickelt. Der Code ist von mir reviewed, getestet und läuft bei mir produktiv.
