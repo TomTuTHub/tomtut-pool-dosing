@@ -111,6 +111,6 @@ Das war TomTuT, bleib hart am Gas.
 
 ---
 
-## Transparenzhinweis
+## Transparency
 
-Ich bin gelernter Fachinformatiker für Systemintegration und habe mittlerweile sehr viele Jahre Erfahrung in der IT. Früher noch MCSE — heute Vibe-Coding. Was soll ich sagen: Diese Integration habe ich mit Hilfe von **Claude** und **ChatGPT** erstellt. Anders hätte ich das nie nebenbei geschafft und vermutlich Monate daran entwickelt. Der Code ist von mir reviewed, getestet und läuft bei mir produktiv.
+I'm a trained IT systems specialist with many years of experience in the field. Back in the day it was MCSE — today it's Vibe-Coding. What can I say: I built this integration with the help of **Claude** and **ChatGPT**. There's no way I could have pulled this off on the side otherwise — it would have taken me months. The code has been reviewed and tested by me and runs in my own production setup.
