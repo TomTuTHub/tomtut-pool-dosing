@@ -99,6 +99,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     chemistry_coordinator = DataUpdateCoordinator(
         hass=hass,
         logger=_LOGGER,
+        config_entry=entry,
         name=f"{entry.data.get(CONF_NAME, entry.title)} Chemistry",
         update_method=_async_update_chemistry,
         update_interval=chemistry_interval,
@@ -106,16 +107,28 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     flow_coordinator = DataUpdateCoordinator(
         hass=hass,
         logger=_LOGGER,
+        config_entry=entry,
         name=f"{entry.data.get(CONF_NAME, entry.title)} Flow",
         update_method=_async_update_flow,
         update_interval=flow_interval,
     )
 
-    try:
-        await chemistry_coordinator.async_config_entry_first_refresh()
-        await flow_coordinator.async_config_entry_first_refresh()
-    except UpdateFailed as err:
-        raise ConfigEntryNotReady(str(err)) from err
+    # A switched-off or unreachable dosing system must not block setup: the
+    # entry stays loaded, the entities exist and report "unavailable" until the
+    # device answers, and the coordinators keep polling on their own interval.
+    # Only update failures are tolerated here - a ConfigEntryError (misuse of
+    # the coordinator API) still aborts setup loudly.
+    for coordinator in (chemistry_coordinator, flow_coordinator):
+        try:
+            await coordinator.async_config_entry_first_refresh()
+        except (ConfigEntryNotReady, UpdateFailed) as err:
+            _LOGGER.warning(
+                "%s: first update failed (dosing system switched off or "
+                "unreachable?). Setup continues, entities stay unavailable "
+                "until the device answers: %s",
+                coordinator.name,
+                err,
+            )
 
     domain_data[entry.entry_id] = {
         COORDINATOR_CHEMISTRY: chemistry_coordinator,
