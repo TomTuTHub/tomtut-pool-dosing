@@ -18,6 +18,7 @@ Use at your own risk.
 - Local polling via HTTP (LAN)
 - Read-only access (no control commands, yet :) )
 - Sensors for **pH**, **Redox**, **Flow**, and **relay/pump status**
+- Starts even while the dosing system is switched off: the entities are created right away and report *unavailable* until the device answers
 - Supports local brand icons in `custom_components/tomtut_pool_dosing/brand/`; they appear automatically from Home Assistant **2026.3+** via the Brands Proxy API.
 
 ---
@@ -36,10 +37,17 @@ elements: []
 
 Available images:
 
-- `/api/tomtut_pool_dosing/static/dosier_v1.png`
-- `/api/tomtut_pool_dosing/static/dosier_v2.png`
-- `/api/tomtut_pool_dosing/static/dosier_v3.png`
-- `/api/tomtut_pool_dosing/static/dosier_v4.png`
+| Image | Type | Background |
+| --- | --- | --- |
+| `/api/tomtut_pool_dosing/static/dosier_v1.png` | Type 1 | white |
+| `/api/tomtut_pool_dosing/static/dosier_v2.png` | Type 1 | grey |
+| `/api/tomtut_pool_dosing/static/dosier_v2_transparent.png` | Type 1 | **transparent** |
+| `/api/tomtut_pool_dosing/static/dosier_v3.png` | Type 2 | white |
+| `/api/tomtut_pool_dosing/static/dosier_v4.png` | Type 2 | grey |
+| `/api/tomtut_pool_dosing/static/dosier_v4_transparent.png` | Type 2 | **transparent** |
+
+The transparent variants are cut out losslessly from the white and the grey rendering
+(`tools/make_transparent.py`) and let the dashboard theme show through.
 
 ---
 
