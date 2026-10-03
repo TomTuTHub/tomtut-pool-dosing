@@ -1,4 +1,4 @@
-# TomTuT Pool Dosing
+# TomTuT Pool Dosing (Beniferro)
 
 Community Home Assistant integration for **Beniferro Gen2** pool dosing systems via **local REST API** (LAN).
 
@@ -73,7 +73,7 @@ The transparent variants are cut out losslessly from the white and the grey rend
 
 1. Settings → **Devices & Services**
 2. **Add Integration**
-3. Search for **TomTuT Pool Dosing**
+3. Search for **TomTuT Pool Dosing (Beniferro)**
 4. Enter the device IP / host and confirm
 
 ---
